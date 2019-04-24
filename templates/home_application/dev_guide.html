@@ -1,0 +1,90 @@
+<%inherit file="/base.html"/>
+
+<%block name='head'>
+	<title>蓝鲸应用开发框架</title>
+	${parent.head()}
+
+</%block>
+
+<%block name="content">
+	<style>
+		.dataclass h4{
+			font-size: 16px;
+			font-weight: 400;
+			color: #555555;
+			border-top: 1px solid #c6cdd3;
+			background: #f4f5f8;
+			height: 35px;
+			line-height: 35px;
+			padding-left: 15px;
+		}
+		.dataclass h4 .no-num {
+			background: #44B549;
+			color: #fff;
+			width: 35px;
+			text-align: center;
+			display: inline-block;
+			height: 35px;
+			margin-left: -15px;
+			margin-right: 10px;
+			margin-top: -1px;
+			font-style:normal;
+			vertical-align: top;
+			float: left;
+		}
+		.wm {
+			border: 1px solid #5898d7;
+			padding: 20px 20px 20px 10px;
+			line-height:2;
+		}
+	</style>
+	<div data-spy="scroll" class="dataclass" style="overflow-y:auto;position: relative;padding:10px;margin-bottom: 40px">
+		<div style="">
+			<h4 id="install_eo"><i class="no-num">1</i> 安装环境</h4>
+			<div class="mt10 mb20 wm lh2">
+				<strong>开发前准备包括：安装python、Mysql等开发环境的配置</strong><br>
+				（1）安装python<br>
+				（2）安装Mysql<br>
+				（3）安装 setuptools-0.6c11.win32-py2.7.exe和MySQL-python-1.2.3.win32-py2.7.exe<br>
+				（4）安装python库，包括django1.8、mako、suds、httplib2等;<br>
+				以上步骤（1）-（4）中的软件(24.8MB)下载：<a target="_blank" href="http://1251000004.cdn.myqcloud.com/1251000004/packages/campus/python_packages.zip">点击下载</a><br>
+				（5）安装本地开发工具，windows环境下推荐使用Eclipse进行代码开发、使用TortoiseSVN管理SVN;<br>
+				（6）如开发项目需要用到后台任务时，需要下载celery相关开发指引和下载包(96.6MB)：<a target="_blank" href="http://1251000004.cdn.myqcloud.com/1251000004/packages/campus/celery_packages.zip">点击下载</a><br>
+			</div>
+			<h4 id="dev_code"><i class="no-num">2</i> 开发项目</h4>
+			<div class="mt10 mb20 wm lh2">
+				<strong>1.配置修改（修改svn中checkout的代码）：</strong><br>
+				（1）config/settings_develop.py 文件中的DATABASES项：配置本地开发数据库信息<br>
+				（2）本地使用Eclipse开发时，工程的启动端口默认为8000，如使用其他端口，	请在config/settings_develop.py 文件中的S_URL项中：修改工程的启动端口<br>
+				<strong>2.host配置</strong><br>
+				在hosts中配置：127.0.0.1 appdev.o.qcloud.com<br>
+				（1）windows下host配置<br>
+				C:\Windows\System32\drivers\etc\hosts文件 中 添加：127.0.0.1 appdev.o.qcloud.com<br>
+				（2）linux下host配置<br>
+				/etc/hosts 文件中添加：127.0.0.1 appdev.o.qcloud.com<br>
+				注：本地开发时请用 appdev.o.qcloud.com 域名访问（本地开发也通过QQ登录，所以必须用域名访问）<br>
+				<strong>3.数据库操作</strong><br>
+				蓝鲸应用使用Django1.8自带的Migration来管理数据库。Migration是django自带的同步models和数据库的数据迁移工具，Migration能够检测对models的更改并同步到数据库。<br>
+				Migration的使用方法如下:<br>
+				（1）执行 manage.py migrate（作用是在数据库中创建django自带的表，包括django_migrations的表，用来存放数据库的变更历史）。<br>
+				（2）执行 manage.py startapp yourappname、添加yourappname到config/settings_custom.py文件"INSTALLED_应用S_CUSTOM"中。<br>
+				（3）在django的models.py中建立数据库模型后，执行manage.py makemigrations yourappname<br>
+				（4）步骤（3）执行成功后再执行manage.py migrate yourappname ，这时候数据库中已经建立了您定义的表<br>
+				（5）在工程中新增application，只需再次执行2—4的步骤即可。 <br>
+				（6）更改models.py的内容，只需执行manage.py makemigrations yourappname和 manage.py migrate yourappname即可。<br>
+				注意： 必须按上面的步骤顺序执行，在执行第（1）步时最好不要加入自己的application，除非您保证自己的application已经有migration的initial文件<br>
+			</div>
+			<h4 id="exe_code"><i class="no-num">3</i> 运行项目</h4>
+			<div class="mt10 mb20 wm lh2">
+				<strong>应用开发完成并将代码提交到SVN后，您可以通过“提测”、“上线”操作将应用部署到测试\正式环境中。</strong><br>
+				操作入口：开发者中心 -》点击应用名称，即可进入应用部署页面。 <br>
+				（1）提测操作：将应用代码在测试环境上进行部署，部署成功后就可以在测试环境中使用您的应用。<br>
+				如果后续对代码进行了修改，点击“提测”重新部署。<br>
+				如果代码中使用了celery来执行后台任务可以勾选上“是否使用celery”。	<br>
+				（2）上线操作：将应用代码在正式环境上进行部署，部署成功后就可以在中使用您的应用。<br>
+				已上线的应用需要进行“再次提测”操作，并在测试环境测试成功后， 才能再次上线。<br>
+				（3）下架操作：系统将应用代码从您选择的环境上撤销部署，届时用户将无法访问该应用，但是该应用的数据库依然保留。您可以进行“提测”操作，重新部署应用。<br>
+			</div>
+		</div>
+	</div>
+</%block>

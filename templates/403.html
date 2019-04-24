@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>系统权限不足</title>
+		<script src="${REMOTE_STATIC_URL}jquery/jquery-1.7.2.min.js"></script>
+        <script src="${REMOTE_STATIC_URL}jquery/jquery.json-2.3.min.js"></script>
+		<link href="${REMOTE_STATIC_URL}bk/bk.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<body style="font-family:Microsoft Yahei;">
+    	<div class="errors-login-failure-wrap box" style="${'height: 200px;margin-top: -140px;' if is_in_frame else ''}">
+    	% if not is_in_frame:
+        	<img src="${REMOTE_STATIC_URL}bk/style_custom/images/expre_login_failure.jpg" width="183" height="112" />
+        % endif
+        <div class="errors-login-fialure-con clearfix">
+	            <h1>系统权限不足！</h1>
+	            <p><strong>您需要：</strong></p>
+	            <p>1、切换其他账号登录；</p>
+	            <p>2、向系统管理员申请白名单体验权限；</p>
+	            <p class="goto"><em id="cd_sec"></em>秒后自动跳转到登录页面</p>
+	            <a href="javascript:;" class="btn-jump f_r" onclick='jump_now()'>立即跳转</a>
+        </div>
+		<script type="text/javascript">
+			var cd_sec = 5;
+			function count_down(){
+				$('#cd_sec').html(cd_sec)
+				cd_sec += -1
+				if(cd_sec < 0){
+					cd_sec = 5;
+					jump_now();
+				}
+				setTimeout('count_down()', 1000)
+			}
+
+			$(function(){
+				count_down();
+			})
+
+			function jump_now(){
+			   window.top.location.href = '${LOGOUT_URL}?is_403=1' ;
+			}
+		</script>
+	</body>
+</html>

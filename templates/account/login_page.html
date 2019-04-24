@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>登录失败</title>
+		<script src="${REMOTE_STATIC_URL}jquery/jquery-1.7.2.min.js"></script>
+        <script src="${REMOTE_STATIC_URL}jquery/jquery.json-2.3.min.js"></script>
+		<link href="${REMOTE_STATIC_URL}bk/bk.css" rel="stylesheet" type="text/css"/>
+        <!-- 这个是全局配置，如果需要在js中使用app_code和remote_static_url,则这个javascript片段一定要保留 -->
+        <script type="text/javascript">
+	    	var app_code = "${APP_CODE}";			// 在蓝鲸系统里面注册的"应用编码"
+	    	var bk_url = "${BK_URL}";                     // 平台URL
+			var remote_static_url = "${REMOTE_STATIC_URL}";   //远程资源链接，403页面需要，不要删除
+	    </script>
+		<script src="${STATIC_URL}js/settings.js?v=${STATIC_VERSION}"></script>
+	</head>
+	<body style="font-family:Microsoft Yahei;">
+    	<div class="errors-login-failure-wrap box">
+            <img src="${REMOTE_STATIC_URL}bk/style_custom/images/expre_login_failure.jpg" width="183" height="112" /> 
+            <div class="errors-login-fialure-con clearfix">          
+	            <h1>用户未登录！</h1>
+	            <p><strong>可能原因：</strong></p>
+	            <p>1、您不是腾讯云注册用户；</p>
+	            <p>2、您之前的登录已经失效了；</p> 
+	            <a href='http://manage.qcloud.com/developerCenter/registUser.php?' target="_blank">点击进入腾讯云注册页面</a>
+	           	<a href="javascript:;" class="btn-jump f_r"  onclick='login_on()'>重新登录</a>           	
+            </div>
+        </div>
+        <script type="text/javascript">
+			var cd_sec = 5;
+			function count_down(){
+				$('#cd_sec').html(cd_sec)
+				cd_sec += -1
+				if(cd_sec < 0){
+					cd_sec = 5;
+					jump_now();
+				}
+				setTimeout('count_down()', 1000)
+			}
+			
+			$(function(){
+				count_down();
+			})
+			
+			function jump_now(){
+			   window.location.href="${LOGIN_URL}"
+			}
+		</script>
+	</body>
+</html>
