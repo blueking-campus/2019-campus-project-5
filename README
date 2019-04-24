@@ -1,0 +1,55 @@
+Version 1.0.0
+
+蓝鲸应用开发框架--助力你的自动化
+
+
+运行要求说明：
+	1. 安装python 2.7
+	2. 安装requirements.txt文件中的python包
+	【相关下载可查看：http://bk.tencent.com/campus/developer-center/dev_guide/newbie_guide/  开发环境安装】
+	3. 安装mysql，并根据config\settings_develop.py中的APP_CODE创建对应数据库，同时调整 config\settings_develop.py里的DB用户名密码
+	4. 数据库初始化：python manage.py migrate   (创建django的表，和框架自带表)
+	5. 配置hosts: 127.0.0.1 appdev.o.qcloud.com
+	6. 启动工程：python manage.py runserver    (测试访问 appdev.o.qcloud.com:8000)
+	注：（1）创建数据库时，default character为utf8，collate为utf8_general_ci
+
+
+目录说明：
+
+-- 公共包
+	account：用户登录相关逻辑，用户信息model： BkUser
+	app_control：功能开关
+	common：公用方法（log、context_processors、xss相关中间件和装饰器、mako模版通用方法、celery周期任务通用方法等）
+	static：静态文件(css，js，images)，框架（bootstrap和jqueryUI等）的js和css可从平台上引用，部分特殊定制的css、images、js才放入static里面
+	templates：模版（django模版和mako模版）
+
+-- 配置包
+    config：用户配置包
+    	settings_develop.py：本地开发数据库、本地celery消息队列设置
+    	settings_custom.py：APP 的自定义settings设置
+    	urls_custom.py：APP的自定义url设置
+    fixtures：BkUser 表初始化文件【默认初始化应用的创建者为超级用户，如无创建者外的其他用户需初始化，一般不修改】
+    	o_fixtures/initial_data.json：首次上线初始化BkUser表
+    	t_fixtures/initial_data.json：首次提测初始化BkUser表
+
+-- 应用包
+	home_application：你的根应用包，用于开发你的应用的主要功能，子功能可以单独建立其他的应用包
+	permission：统一权限管理通用包
+
+
+开发说明或注意：
+	* 若您对Django的数据库操作不熟悉，可参考以下数据库操作说明或Django官网（https://docs.djangoproject.com/en/1.8/topics/migrations/）
+	* 若开发中使用了额外的python包，可在requirements.txt中添加，应用部署时平台将自动安装
+
+
+数据库操作说明：
+	蓝鲸应用使用Django1.8自带的Migration来管理数据库。Migration是django自带的同步models和数据库的数据迁移工具，Migration能够检测对models的更改并同步到数据库
+	Migration的使用（查看简单使用）方法如下：
+	（1）执行 manage.py migrate（作用是在数据库中创建django自带的表，包括django_migrations的表，用来存放数据库的变更历史）
+	（2）执行 manage.py startapp yourappname、添加yourappname到config/settings_custom.py文件"INSTALLED_APPS_CUSTOM"中
+	（3）在django的models.py中建立数据库模型后，执行manage.py makemigrations yourappname
+	（4）步骤（3）执行成功后再执行manage.py migrate yourappname ，这时候数据库中已经建立了您定义的表
+	（5）在工程中新增app，只需再次执行（2）—（4）的步骤即可
+	（6）更改models.py的内容，只需执行manage.py makemigrations yourappname和 manage.py migrate yourappname即可
+	注意： 必须按上面的步骤顺序执行，在执行第（1）步时最好不要加入自己的app，除非您保证自己的app已经有migration的initial文件
+
