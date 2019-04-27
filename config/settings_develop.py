@@ -8,7 +8,7 @@ try:
 except ImportError:
     LOCAL_APP_CODE = ''
     LOCAL_SECRET_KEY = ''
-    LOCAL_DATABASE = {
+    LOCAL_DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',  # 我们默认用mysql
             'NAME': LOCAL_APP_CODE,  # 数据库名 (默认与APP_CODE相同)
@@ -28,7 +28,7 @@ SECRET_KEY = LOCAL_SECRET_KEY
 # ===============================================================================
 # 数据库设置, 本地开发数据库设置
 # ===============================================================================
-DATABASES = LOCAL_DATABASE
+DATABASES = LOCAL_DATABASES
 
 # ===============================================================================
 # 本地访问路径设置
