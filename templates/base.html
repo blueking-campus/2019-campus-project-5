@@ -29,33 +29,36 @@
 <body>
     <div>
         <!--顶部导航 Start-->
-        <nav class="navbar navbar-default king-horizontal-nav2" role="navigation">
+        <nav class="navbar navbar-default king-horizontal-nav1" role="navigation">
             <div class="container" style="width: 100%;">
-                <div class="navbar-header col-md-4 col-sm-4 col-xs-4 logo">
-                    <a class="navbar-brand" href="${SITE_URL}" style="font-size:24px;padding-top: 15px;color: #438bca;">
-                        蓝鲸开发框架
+                <div class="navbar-header col-md-4 col-sm-4 col-xs-4">
+                    <a class="navbar-brand" href="${SITE_URL}" style="display: flex; align-items: center">
+                        <img src="https://o.qcloud.com/static_api/v3/bk/images/logo.png" class="">
                     </a>
                 </div>
                 <div class="collapse navbar-collapse navbar-responsive-collapse" id="king-example-navbar-collapse-2">
                     <ul class="nav navbar-nav">
                         <%
-                            home = dev_guide = contact = ''
+                            home = apply = manage = personal = ''
                             relative_path = APP_PATH
                             if relative_path == SITE_URL or relative_path.startswith(SITE_URL + "?"):
                                 home = 'king-navbar-active'
-                            elif relative_path.startswith(SITE_URL + "dev_guide/"):
-                                dev_guide = 'king-navbar-active'
-                            elif relative_path.startswith(SITE_URL + "contact/"):
-                                contact = 'king-navbar-active'
+                            elif relative_path.startswith(SITE_URL + "apply/"):
+                                apply = 'king-navbar-active'
+                            elif relative_path.startswith(SITE_URL + "manage/"):
+                                manage = 'king-navbar-active'
+                            elif relative_path.startswith(SITE_URL + "personal/"):
+                                personal = 'king-navbar-active'
                         %>
-                        <li class="${home}"><a href="${SITE_URL}"><span>首页</span></a></li>
-                        <li class="${dev_guide}"><a href="${SITE_URL}dev_guide/"><span>开发指引</span></a></li>
-                        <li class="${contact}"><a href="${SITE_URL}contact/"><span>联系我们</span></a></li>
+                        <!--<li class="${home}"><a href="${SITE_URL}"><span style="color: white;">首页</span></a></li>-->
+                        <li class="${apply}"><a href="${SITE_URL}dev_guide/"><span style="color: white;">奖项申报</span></a></li>
+                        <li class="${manage}"><a href="${SITE_URL}contact/"><span style="color: white;">系统管理</span></a></li>
+                        <li class="${personal}"><a href="${SITE_URL}contact/"><span style="color: white;">个人中心</span></a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <a href="###" style="color: #898989;font-size:14px;line-height: 48px;padding: 0 15px;">
                             <img src="${AVATAR}"  onerror="javascript:this.src='${STATIC_URL}images/getheadimg.jpg';" width="40" alt="Avatar" style="border-radius:50%;margin-right:10px;">
-                            <span>${NICK}</span>
+                            <span>${username}</span>
                         </a>
                         <!--     退出登录，正式环境下该方法无效             -->
                         % if RUN_MODE != 'PRODUCT':
