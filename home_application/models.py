@@ -195,10 +195,10 @@ class AwardManager(models.Manager):
         response['awards'] = data
         return response
 
-    def viewable_all(self, username):
-        """首页查询可申请的奖项"""
+    def all_by_username(self, username, is_active=False):
+        """通过username查询该username可参加的奖项"""
         qq = User.objects.get_qq(username=username)
-        awards = super(models.Manager, self).filter(organization__applicant__in=qq)
+        awards = super(models.Manager, self).filter(organization__applicant__in=qq, is_active=is_active)
         # 格式化数据
         awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
         data = awards.value('key', 'requirement', 'level__name',
@@ -208,6 +208,7 @@ class AwardManager(models.Manager):
         return data
 
     def creat(self):
+        """创建奖项"""
         pass
 
 
