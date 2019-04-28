@@ -63,7 +63,6 @@ class Level(models.Model):
 class OrganizationManager(models.Manager):
     """组织管理类"""
 
-    # @permission_required('organization.add_organization')
     def creat(self, name, reviwer, applicant, manager):
         """创建组织"""
         reviwer = '' if reviwer is None else reviwer
@@ -83,7 +82,6 @@ class OrganizationManager(models.Manager):
             # name为空或None，创建组织失败
             return False
 
-    # @permission_required('organization.view_organization')
     def all(self, page, page_size):
         """查询所有未逻辑删除的组织"""
         orgs = super(models.Manager, self).filter(is_deleted=False)
@@ -150,7 +148,6 @@ class Organization(models.Model):
 class AwardManager(models.Manager):
     """奖项管理类"""
 
-    # @permission_required('organization.view_award')
     def all(self, name, organization, stauts, begin_time, end_time, page=1, page_size=5):
         """查询所有未逻辑删除的奖项"""
 
@@ -198,6 +195,8 @@ class AwardManager(models.Manager):
     def all_by_username(self, username, is_active=False):
         """通过username查询该username可参加的奖项"""
         qq = User.objects.get_qq(username=username)
+        if not qq:
+            return []
         awards = super(models.Manager, self).filter(organization__applicant__in=qq, is_active=is_active)
         # 格式化数据
         awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
@@ -233,11 +232,12 @@ class Award(models.Model):
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
 
+    objects = AwardManager()
+
     class Mate:
         verbose_name = u'奖项'
         verbose_name_plural = verbose_name
 
-    @classmethod
     def logical_delete(self):
         """逻辑删除奖项"""
         try:
