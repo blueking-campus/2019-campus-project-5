@@ -11,17 +11,8 @@ from django.core.paginator import PageNotAnInteger
 
 from account.models import BkUser
 
+from home_application.utils import DateJSONEncoder
 
-class DateJSONEncoder(json.JSONEncoder):
-    """date-json编码"""
-
-    def default(self, o):
-        if isinstance(o, datetime.datetime):
-            return o.strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(o, datetime.date):
-            return o.strftime("%Y-%m-%d")
-        else:
-            return json.JSONEncoder.default(self, o)
 
 
 class UserManager(models.Manager):
@@ -34,7 +25,7 @@ class UserManager(models.Manager):
         """
         try:
             user = super(models.Manager, self).get(username=username)
-        except:
+        except Exception, err:
             return None
         else:
             return user.qq
@@ -58,6 +49,9 @@ class Level(models.Model):
     class Mate:
         verbose_name = u'级别'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class OrganizationManager(models.Manager):
@@ -95,8 +89,9 @@ class OrganizationManager(models.Manager):
         except EmptyPage:
             orgs = paginator.page(paginator.num_pages)
         # 格式化数据
-        data = orgs.value('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
+        data = orgs.values('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
         data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
         response['organizations'] = data
         return response
 
@@ -118,6 +113,9 @@ class Organization(models.Model):
     class Mate:
         verbose_name = u'组织'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
     def logical_delete(self):
         """逻辑删除组织"""
@@ -185,10 +183,11 @@ class AwardManager(models.Manager):
 
         # 格式化数据
         awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
-        data = awards.value('key', 'requirement', 'level__name',
+        data = awards.values('key', 'requirement', 'level__name',
                             'organization__name', 'status', 'begin_time',
                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
         response['awards'] = data
         return response
 
@@ -197,13 +196,14 @@ class AwardManager(models.Manager):
         qq = User.objects.get_qq(username=username)
         if not qq:
             return []
-        awards = super(models.Manager, self).filter(organization__applicant__in=qq, is_active=is_active)
+        awards = super(models.Manager, self).filter(organization__applicant__contains=qq, is_active=is_active)
         # 格式化数据
-        awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
-        data = awards.value('key', 'requirement', 'level__name',
-                            'organization__name', 'status', 'begin_time',
+        # awards.extra(select={'status': "if is_active '生效中' else '已过期')"})
+        data = awards.values('key', 'name', 'requirement', 'level__name',
+                            'organization__name', 'is_active', 'begin_time',
                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
         return data
 
     def creat(self):
@@ -226,8 +226,8 @@ class Award(models.Model):
     )
     is_active = models.BooleanField(verbose_name=u'是否生效', choices=IS_ACTIVE_CHOICES)
 
-    apply_number = models.IntegerField(verbose_name=u'申请人数')
-    awarded_number = models.IntegerField(verbose_name=u'获奖人数')
+    apply_number = models.IntegerField(verbose_name=u'申请人数', default=0)
+    awarded_number = models.IntegerField(verbose_name=u'获奖人数', default=0)
     key = models.CharField(max_length=64, verbose_name=u'奖项标识')
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
