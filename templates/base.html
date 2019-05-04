@@ -33,6 +33,7 @@
             <div class="container" style="width: 100%;">
                 <div class="navbar-header col-md-4 col-sm-4 col-xs-4">
                     <a class="navbar-brand" href="${SITE_URL}" style="display: flex; align-items: center">
+                        <span style="color: white;margin-right: 10px;">奖项申报</span>
                         <img src="https://o.qcloud.com/static_api/v3/bk/images/logo.png" class="">
                     </a>
                 </div>
@@ -42,23 +43,23 @@
                             home = apply = manage = personal = ''
                             relative_path = APP_PATH
                             if relative_path == SITE_URL or relative_path.startswith(SITE_URL + "?"):
-                                home = 'king-navbar-active'
+                                home = 'king-navbar-active active'
                             elif relative_path.startswith(SITE_URL + "apply/"):
-                                apply = 'king-navbar-active'
+                                apply = 'king-navbar-active active'
                             elif relative_path.startswith(SITE_URL + "manage/"):
-                                manage = 'king-navbar-active'
+                                manage = 'king-navbar-active active'
                             elif relative_path.startswith(SITE_URL + "personal/"):
-                                personal = 'king-navbar-active'
+                                personal = 'king-navbar-active active'
                         %>
                         <!--<li class="${home}"><a href="${SITE_URL}"><span style="color: white;">首页</span></a></li>-->
-                        <li class="${apply}"><a href="${SITE_URL}dev_guide/"><span style="color: white;">奖项申报</span></a></li>
-                        <li class="${manage}"><a href="${SITE_URL}contact/"><span style="color: white;">系统管理</span></a></li>
-                        <li class="${personal}"><a href="${SITE_URL}contact/"><span style="color: white;">个人中心</span></a></li>
+                        <!--<li class="${apply}"><a href="${SITE_URL}"><span style="color: white;">奖项申报</span></a></li>-->
+                        <li class="${manage}"><a href="${SITE_URL}manage/"><span style="color: white;">系统管理</span></a></li>
+                        <li class="${personal}"><a href="${SITE_URL}personal/"><span style="color: white;">个人中心</span></a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <a href="###" style="color: #898989;font-size:14px;line-height: 48px;padding: 0 15px;">
                             <img src="${AVATAR}"  onerror="javascript:this.src='${STATIC_URL}images/getheadimg.jpg';" width="40" alt="Avatar" style="border-radius:50%;margin-right:10px;">
-                            <span style="color: white;">${username}</span>
+                            <span style="color: white;">${NICK}</span>
                         </a>
                         <!--     退出登录，正式环境下该方法无效             -->
                         % if RUN_MODE != 'PRODUCT':
