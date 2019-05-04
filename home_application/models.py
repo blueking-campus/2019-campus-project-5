@@ -3,32 +3,13 @@ import json
 import datetime
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
-from account.models import BkUser
-
 from home_application.utils import DateJSONEncoder
-
-
-
-class UserManager(models.Manager):
-    """用户自定义管理类"""
-
-    def get_qq(self, username=None):
-        """
-        获取qq
-        根据username返回对应的qq
-        """
-        try:
-            user = super(models.Manager, self).get(username=username)
-        except Exception, err:
-            return None
-        else:
-            return user.qq
 
 
 class User(models.Model):
@@ -36,11 +17,13 @@ class User(models.Model):
     username = models.CharField(max_length=64, verbose_name=u'用户名', unique=True)
     qq = models.CharField(max_length=64, verbose_name=u'qq号码', unique=True)
 
-    objects = UserManager()
-
     class Mate:
         verbose_name = u'用户关联'
         verbose_name_plural = verbose_name
+
+    def get_qq(self):
+        """获取qq"""
+        return self.qq
 
 
 class Level(models.Model):
@@ -102,7 +85,7 @@ class Organization(models.Model):
     reviewer = models.TextField(verbose_name=u'负责人员', blank=True)
     applicant = models.TextField(verbose_name=u'申请人', blank=True)
 
-    key = models.CharField(max_length=64, verbose_name=u'组织标识')
+    key = models.CharField(max_length=64, verbose_name=u'组织标识', unique=True)
     manager = models.CharField(max_length=64, verbose_name=u'更新人')
     update_time = models.DateTimeField(verbose_name=u'更新时间', auto_now=True)
     created_time = models.DateTimeField(verbose_name=u'申报时间', auto_now_add=True)
@@ -191,10 +174,12 @@ class AwardManager(models.Manager):
         response['awards'] = data
         return response
 
-    def all_by_username(self, username, is_active=False):
+    def all_by_username(self, username, is_active=True):
         """通过username查询该username可参加的奖项"""
-        qq = User.objects.get_qq(username=username)
-        if not qq:
+        try:
+            qq = User.objects.get(username=username).get_qq()
+        except ObjectDoesNotExist, err:
+            print err
             return []
         awards = super(models.Manager, self).filter(organization__applicant__contains=qq, is_active=is_active)
         # 格式化数据
@@ -228,7 +213,7 @@ class Award(models.Model):
 
     apply_number = models.IntegerField(verbose_name=u'申请人数', default=0)
     awarded_number = models.IntegerField(verbose_name=u'获奖人数', default=0)
-    key = models.CharField(max_length=64, verbose_name=u'奖项标识')
+    key = models.CharField(max_length=64, verbose_name=u'奖项标识', unique=True)
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
 
@@ -250,6 +235,25 @@ class Award(models.Model):
             return True
 
 
+class ApplicationManager(models.Manager):
+    """申请管理类"""
+
+    def all(self):
+        """重载all"""
+        return super(models.Manager, self).filter(is_deleted=False)
+
+    def awarded(self, username):
+        """根据username查询已过期的奖项"""
+        try:
+            qq = User.objects.get(username=username).get_qq()
+        except ObjectDoesNotExist, err:
+            print err
+            return []
+        apps = Application.objects.all().filter(status=4, award__organization__applicant__contains=qq)
+        data = apps.values('key', 'award__organization__name', 'award__name', 'created_time', 'applicant')
+        data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
+        return data
 
 class Application(models.Model):
     """奖项申请"""
@@ -268,10 +272,24 @@ class Application(models.Model):
     award = models.ForeignKey(to=Award, verbose_name=u'奖项', on_delete=models.CASCADE)
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
+    key = models.CharField(max_length=64, verbose_name=u'申报标识', unique=True)
+
+    objects = ApplicationManager()
 
     class Mate:
         verbose_name = u'奖项申请'
         verbose_name_plural = verbose_name
+
+    def logical_delete(self):
+        """逻辑删除申请"""
+        try:
+            with transaction.atomic():
+                self.is_deleted = True
+                self.save()
+        except Exception:
+            return False
+        else:
+            return True
 
 
 class Accessory(models.Model):
