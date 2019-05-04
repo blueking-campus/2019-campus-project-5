@@ -3,41 +3,13 @@ import json
 import datetime
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
-from account.models import BkUser
-
-
-class DateJSONEncoder(json.JSONEncoder):
-    """date-json编码"""
-
-    def default(self, o):
-        if isinstance(o, datetime.datetime):
-            return o.strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(o, datetime.date):
-            return o.strftime("%Y-%m-%d")
-        else:
-            return json.JSONEncoder.default(self, o)
-
-
-class UserManager(models.Manager):
-    """用户自定义管理类"""
-
-    def get_qq(self, username=None):
-        """
-        获取qq
-        根据username返回对应的qq
-        """
-        try:
-            user = super(models.Manager, self).get(username=username)
-        except:
-            return None
-        else:
-            return user.qq
+from home_application.utils import DateJSONEncoder
 
 
 class User(models.Model):
@@ -45,11 +17,13 @@ class User(models.Model):
     username = models.CharField(max_length=64, verbose_name=u'用户名', unique=True)
     qq = models.CharField(max_length=64, verbose_name=u'qq号码', unique=True)
 
-    objects = UserManager()
-
     class Mate:
         verbose_name = u'用户关联'
         verbose_name_plural = verbose_name
+
+    def get_qq(self):
+        """获取qq"""
+        return self.qq
 
 
 class Level(models.Model):
@@ -59,11 +33,13 @@ class Level(models.Model):
         verbose_name = u'级别'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.name
+
 
 class OrganizationManager(models.Manager):
     """组织管理类"""
 
-    # @permission_required('organization.add_organization')
     def creat(self, name, reviwer, applicant, manager):
         """创建组织"""
         reviwer = '' if reviwer is None else reviwer
@@ -83,7 +59,6 @@ class OrganizationManager(models.Manager):
             # name为空或None，创建组织失败
             return False
 
-    # @permission_required('organization.view_organization')
     def all(self, page, page_size):
         """查询所有未逻辑删除的组织"""
         orgs = super(models.Manager, self).filter(is_deleted=False)
@@ -97,8 +72,9 @@ class OrganizationManager(models.Manager):
         except EmptyPage:
             orgs = paginator.page(paginator.num_pages)
         # 格式化数据
-        data = orgs.value('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
+        data = orgs.values('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
         data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
         response['organizations'] = data
         return response
 
@@ -109,7 +85,7 @@ class Organization(models.Model):
     reviewer = models.TextField(verbose_name=u'负责人员', blank=True)
     applicant = models.TextField(verbose_name=u'申请人', blank=True)
 
-    key = models.CharField(max_length=64, verbose_name=u'组织标识')
+    key = models.CharField(max_length=64, verbose_name=u'组织标识', unique=True)
     manager = models.CharField(max_length=64, verbose_name=u'更新人')
     update_time = models.DateTimeField(verbose_name=u'更新时间', auto_now=True)
     created_time = models.DateTimeField(verbose_name=u'申报时间', auto_now_add=True)
@@ -120,6 +96,9 @@ class Organization(models.Model):
     class Mate:
         verbose_name = u'组织'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
     def logical_delete(self):
         """逻辑删除组织"""
@@ -150,7 +129,6 @@ class Organization(models.Model):
 class AwardManager(models.Manager):
     """奖项管理类"""
 
-    # @permission_required('organization.view_award')
     def all(self, name, organization, stauts, begin_time, end_time, page=1, page_size=5):
         """查询所有未逻辑删除的奖项"""
 
@@ -188,23 +166,29 @@ class AwardManager(models.Manager):
 
         # 格式化数据
         awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
-        data = awards.value('key', 'requirement', 'level__name',
+        data = awards.values('key', 'requirement', 'level__name',
                             'organization__name', 'status', 'begin_time',
                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
         response['awards'] = data
         return response
 
-    def all_by_username(self, username, is_active=False):
+    def all_by_username(self, username, is_active=True):
         """通过username查询该username可参加的奖项"""
-        qq = User.objects.get_qq(username=username)
-        awards = super(models.Manager, self).filter(organization__applicant__in=qq, is_active=is_active)
+        try:
+            qq = User.objects.get(username=username).get_qq()
+        except ObjectDoesNotExist, err:
+            print err
+            return []
+        awards = super(models.Manager, self).filter(organization__applicant__contains=qq, is_active=is_active)
         # 格式化数据
-        awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
-        data = awards.value('key', 'requirement', 'level__name',
-                            'organization__name', 'status', 'begin_time',
+        # awards.extra(select={'status': "if is_active '生效中' else '已过期')"})
+        data = awards.values('key', 'name', 'requirement', 'level__name',
+                            'organization__name', 'is_active', 'begin_time',
                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
         return data
 
     def creat(self):
@@ -227,17 +211,18 @@ class Award(models.Model):
     )
     is_active = models.BooleanField(verbose_name=u'是否生效', choices=IS_ACTIVE_CHOICES)
 
-    apply_number = models.IntegerField(verbose_name=u'申请人数')
-    awarded_number = models.IntegerField(verbose_name=u'获奖人数')
-    key = models.CharField(max_length=64, verbose_name=u'奖项标识')
+    apply_number = models.IntegerField(verbose_name=u'申请人数', default=0)
+    awarded_number = models.IntegerField(verbose_name=u'获奖人数', default=0)
+    key = models.CharField(max_length=64, verbose_name=u'奖项标识', unique=True)
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
+
+    objects = AwardManager()
 
     class Mate:
         verbose_name = u'奖项'
         verbose_name_plural = verbose_name
 
-    @classmethod
     def logical_delete(self):
         """逻辑删除奖项"""
         try:
@@ -250,6 +235,25 @@ class Award(models.Model):
             return True
 
 
+class ApplicationManager(models.Manager):
+    """申请管理类"""
+
+    def all(self):
+        """重载all"""
+        return super(models.Manager, self).filter(is_deleted=False)
+
+    def awarded(self, username):
+        """根据username查询已过期的奖项"""
+        try:
+            qq = User.objects.get(username=username).get_qq()
+        except ObjectDoesNotExist, err:
+            print err
+            return []
+        apps = Application.objects.all().filter(status=4, award__organization__applicant__contains=qq)
+        data = apps.values('key', 'award__organization__name', 'award__name', 'created_time', 'applicant')
+        data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
+        return data
 
 class Application(models.Model):
     """奖项申请"""
@@ -268,10 +272,24 @@ class Application(models.Model):
     award = models.ForeignKey(to=Award, verbose_name=u'奖项', on_delete=models.CASCADE)
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
+    key = models.CharField(max_length=64, verbose_name=u'申报标识', unique=True)
+
+    objects = ApplicationManager()
 
     class Mate:
         verbose_name = u'奖项申请'
         verbose_name_plural = verbose_name
+
+    def logical_delete(self):
+        """逻辑删除申请"""
+        try:
+            with transaction.atomic():
+                self.is_deleted = True
+                self.save()
+        except Exception:
+            return False
+        else:
+            return True
 
 
 class Accessory(models.Model):
