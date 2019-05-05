@@ -53,7 +53,9 @@
                         %>
                         <!--<li class="${home}"><a href="${SITE_URL}"><span style="color: white;">首页</span></a></li>-->
                         <li class="${apply}"><a href="${SITE_URL}"><span style="color: white;">奖项申报</span></a></li>
+                        % if user.is_superuser:
                         <li class="${manage}"><a href="${SITE_URL}manage/"><span style="color: white;">系统管理</span></a></li>
+                        % endif
                         <li class="${personal}"><a href="${SITE_URL}personal/"><span style="color: white;">个人中心</span></a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
