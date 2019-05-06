@@ -129,7 +129,7 @@ class Organization(models.Model):
 class AwardManager(models.Manager):
     """奖项管理类"""
 
-    def all(self, name, organization, stauts, begin_time, end_time, page=1, page_size=5):
+    def all(self, name, organization, stauts, date_time, page=1, page_size=10):
         """查询所有未逻辑删除的奖项"""
 
         # 所有未逻辑删除的奖项
@@ -147,22 +147,23 @@ class AwardManager(models.Manager):
             awards = awards.filter(is_active=False)
         elif stauts == 2:
             awards = awards.filter(is_active=True)
-        if begin_time and end_time:
+        if date_time:
             # 查询时间
-            begin_time = datetime.datetime.strptime(begin_time, "%Y-%m-%d %H:%M:%S")
-            end_time = datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-            awards = awards.filter(begin_time__gte=begin_time, end_time__lte=end_time)
+            date_time = datetime.datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+            awards = awards.filter(begin_time__lte=date_time, end_time__gte=date_time)
 
         # 分页
         response = {}
         paginator = Paginator(awards, page_size)
         response['total'] = paginator.count
+        response['page_size'] = page_size
+        response['page'] = page
         try:
-            awards = paginator.page(page)
+            awards = paginator.page(page).object_list
         except PageNotAnInteger:
-            awards = paginator.page(1)
+            awards = paginator.page(1).object_list
         except EmptyPage:
-            awards = paginator.page(paginator.num_pages)
+            awards = paginator.page(paginator.num_pages).object_list
 
         # 格式化数据
         awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
