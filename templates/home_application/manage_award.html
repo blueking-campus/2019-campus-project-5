@@ -1,0 +1,413 @@
+<%inherit file="/base.html"/>
+<%namespace name="navbar" file="/home_application/manage_nav.html"/>
+
+<%block name='head'>
+	<title>奖项管理</title>
+    <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
+    ${parent.head()}
+
+    <!--datetimepicker-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
+
+    <!--datatables-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.css" rel="stylesheet"/>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/jquery.dataTables.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.js"></script>
+
+     <!--模态对话框-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/css/ui-dialog.css" rel="stylesheet">
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/dist/dialog-min.js"></script>
+</%block>
+
+<%block name="content">
+    <!--面包板 开始-->
+    <!-- <div class="king-page-topbar pl20 pr20 {{ marginStyle }}"> -->
+    <div class="king-page-topbar m20">
+        <!--<h3 class="king-topbar-title mb0">-->
+            <!--<span>Breadcrumb</span>-->
+        <!--</h3>-->
+        <ul class="breadcrumb king-breadcrumb pl0 bg-transparent">
+            <li><a href="/manage/">系统管理</a></li>
+            <li><a href="/manage/awards/">奖项管理</a></li>
+        </ul>
+    </div>
+    <!--面包板 结束-->
+    <div class="king-page-box king-layout1-main clearfix mt30">
+        <!-- 左边 start -->
+        ${navbar.navbar()}
+        <!-- 左边 end -->
+        <!-- content start -->
+        <div class="king-content-wrap">
+            <div class="king-layout1-content" style="margin-left: 216px;">
+                <!-- 面板 编辑 开始 -->
+                <div class="panel king-panel1 ml10 ">
+                    <div class="panel-heading king-panel-head1 king-panel-top1">
+                        <h3 class="panel-title">奖项</h3>
+                    </div>
+                    <div class="panel-body">
+                        <!--内联表单 开始-->
+                        <div id="toolbar">
+                            <form class="form-inline mt10 mb5">
+                                <div class="form-group">
+                                    <label for="award">申请奖项：</label>
+                                    <input type="text" class="form-control" id="award" placeholder="输入奖项名">
+                                    <input type="hidden" id="award_value">
+                                </div>
+                                <div class="form-group">
+                                    <label for="organization">所属组织：</label>
+                                    <input type="text" class="form-control" id="organization" placeholder="输入组织名">
+                                    <input type="hidden" id="organization_value">
+                                </div>
+                                <div class="form-group">
+                                    <label class="">状态：</label>
+                                    <select name="" id="" class="form-control">
+                                        <option value="0">不限</option>
+                                        <option value="1">已过期</option>
+                                        <option value="2">有效</option>
+                                    </select>
+                                    <input type="hidden" id="status_value">
+                                </div>
+                                <div class="input-group date" data-date="" id="datetimepicker" data-date-format="dd MM yyyy HH MM SS" data-link-field="datetime_value" data-link-format="yyyy-mm-dd hh:ii:ss">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                    <!--<label for="datetimepicker">申报时间：</label>-->
+                                    <input class="form-control" size="16" type="text" value="" placeholder="申报时间">
+                                    <input type="hidden" id="datetime_value">
+                                    <br>
+                                </div>
+                                <script type="text/javascript">
+                                    //日期选择器(Bootstrap)-2，日期选择
+                                    $('#datetimepicker').datetimepicker({
+                                        language:  'zh-TW',
+                                        weekStart: 1,
+                                        todayBtn:  true,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                        startView: 2,
+                                        minView: 0,
+                                        forceParse: false,
+                                        format:"yyyy-mm-dd hh:ii:ss",
+                                    });
+                                </script>
+
+                                <button type="button" class="king-btn king-info">查询</button>
+                                <button type="button" class="king-btn king-info" id="clones">批量克隆</button>
+                                <button type="button" class="king-btn king-info">新增</button>
+                            </form>
+                        </div>
+                        <!--内联表单 结束-->
+
+                         <!--<section class="m10">-->
+                            <!--<div class="form-group clearfix">-->
+                                <!--<div class="col-sm-12">-->
+                                    <!--<div class="bk-horizontal-line"></div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                         <!--</section>-->
+
+                         <table id="awards_table" class="table table-bordered table-hover dataTable no-footer" role="grid">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 80px;">序号</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 259.048px;">所属组织</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 145.048px;">奖项级别</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 166.048px;">奖项名称</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 145.048px;">状态</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 170px;">开始时间</th>
+
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 170px;">结束时间</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 145px;">申请人数</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 145px;">获奖人数</th>
+                                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 170px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button>查看</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                         </table>
+                        <script type="text/javascript">
+                            //表格(DataTables)-1，html数据源
+                            var language = {
+                                search: '搜索：',
+                                lengthMenu: "每页显示 _MENU_ 记录",
+                                zeroRecords: "没找到相应的数据！",
+                                info: "分页 _PAGE_ / _PAGES_",
+                                infoEmpty: "暂无数据！",
+                                infoFiltered: "(从 _MAX_ 条数据中搜索)",
+                                paginate: {
+                                    first: '首页',
+                                    last: '尾页',
+                                    previous: '上一页',
+                                    next: '下一页',
+                                }
+                            }
+                            $('#awards_table').dataTable({
+                                autowidth: false, // 自动宽度
+                                paging: true, //分页
+                                ordering: false, //关闭排序
+                                info: false, //隐藏左下角分页信息
+                                searching: false, //关闭搜索
+                                pageLength : 3, //每页显示几条数据
+                                lengthChange: false, //不允许用户改变表格每页显示的记录数
+                                language: language, //汉化
+                                // clickToSelect: true, //是否启用点击选中行
+                                // serverSide: true, // 服务器分页
+                                // colums: {
+                                //     "data": "award",
+                                // },
+                                // data: [{
+                                //     "award": 1
+                                // }]
+
+                            });
+                        </script>
+
+                        <!--<table class="table mb0 pr15 ranger-box2">-->
+                            <!--<thead>-->
+                                <!--<tr>-->
+                                    <!--<th style="width: 70px;">#</th>-->
+                                    <!--<th style="width: 15%;">名称</th>-->
+                                    <!--<th style="width: 15%;">位置</th>-->
+                                    <!--<th style="width: 15%;">日期</th>-->
+                                    <!--<th style="width: 15%;">类型</th>-->
+                                    <!--<th>操作</th>-->
+                                <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                                <!--<tr>-->
+                                    <!--<td style="width: 70px;">1</td>-->
+                                    <!--<td style="width: 15%;">Ravi Kumar</td>-->
+                                    <!--<td style="width: 15%;">India</td>-->
+                                    <!--<td style="width: 15%;">23/12/2012</td>-->
+                                    <!--<td style="width: 15%;">Paid</td>-->
+                                    <!--<td>-->
+                                        <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td style="width: 70px;">2</td>-->
+                                    <!--<td style="width: 15%;">Ravi Kumar</td>-->
+                                    <!--<td style="width: 15%;">India</td>-->
+                                    <!--<td style="width: 15%;">23/12/2012</td>-->
+                                    <!--<td style="width: 15%;">Paid</td>-->
+                                    <!--<td>-->
+                                        <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td style="width: 70px;">3</td>-->
+                                    <!--<td style="width: 15%;">Ravi Kumar</td>-->
+                                    <!--<td style="width: 15%;">India</td>-->
+                                    <!--<td style="width: 15%;">23/12/2012</td>-->
+                                    <!--<td style="width: 15%;">Paid</td>-->
+                                    <!--<td>-->
+                                        <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td style="width: 70px;">4</td>-->
+                                    <!--<td style="width: 15%;">Ravi Kumar</td>-->
+                                    <!--<td style="width: 15%;">India</td>-->
+                                    <!--<td style="width: 15%;">23/12/2012</td>-->
+                                    <!--<td style="width: 15%;">Paid</td>-->
+                                    <!--<td>-->
+                                        <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td style="width: 70px;">5</td>-->
+                                    <!--<td style="width: 15%;">Ravi Kumar</td>-->
+                                    <!--<td style="width: 15%;">India</td>-->
+                                    <!--<td style="width: 15%;">23/12/2012</td>-->
+                                    <!--<td style="width: 15%;">Paid</td>-->
+                                    <!--<td>-->
+                                        <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td style="width: 70px;">6</td>-->
+                                    <!--<td style="width: 15%;">Ravi Kumar</td>-->
+                                    <!--<td style="width: 15%;">India</td>-->
+                                    <!--<td style="width: 15%;">23/12/2012</td>-->
+                                    <!--<td style="width: 15%;">Paid</td>-->
+                                    <!--<td>-->
+                                        <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                        <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+
+                        <!--&lt;!&ndash;分页条 开始&ndash;&gt;-->
+                        <!--<nav style="text-align: center" class="mt10">-->
+                            <!--<ul class="pagination">-->
+                                <!--<li class="disabled">-->
+                                    <!--<a href="javascript:;" aria-label="Previous">-->
+                                        <!--<span aria-hidden="true">«</span>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+                                <!--<li class="active"><a href="javascript:;">1</a></li>-->
+                                <!--<li><a href="javascript:;">2</a></li>-->
+                                <!--<li><a href="javascript:;">3</a></li>-->
+                                <!--<li><a href="javascript:;">4</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+                                <!--<li><a href="javascript:;">5</a></li>-->
+
+
+                                <!--<li>-->
+                                    <!--<a href="javascript:;" aria-label="Next">-->
+                                        <!--<span aria-hidden="true">»</span>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                        <!--</nav>-->
+                        <!--&lt;!&ndash;分页条 结束&ndash;&gt;-->
+
+                        <!--<template id="header_tpl_15570707807532">-->
+                            <!--<tr>-->
+                                <!--<th style="width: 70px;">#index#</th>-->
+                                <!--<th style="width: 15%;">#name#</th>-->
+                                <!--<th style="width: 15%;">#position#</th>-->
+                                <!--<th style="width: 15%;">#date#</th>-->
+                                <!--<th style="width: 15%;">#type#</th>-->
+                                <!--<th>操作</th>-->
+                            <!--</tr>-->
+                        <!--</template>-->
+                        <!--<template id="tpl_15570707807532">-->
+                            <!--<tr>-->
+                                <!--<td style="width: 70px;">#index#</td>-->
+                                <!--<td style="width: 15%;">#name#</td>-->
+                                <!--<td style="width: 15%;">#position#</td>-->
+                                <!--<td style="width: 15%;">#date#</td>-->
+                                <!--<td style="width: 15%;">#type#</td>-->
+                                <!--<td>-->
+                                    <!--<button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>-->
+                                    <!--<button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>-->
+                                    <!--<button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                        <!--</template>-->
+                        <!-- 设置面板End -->
+                    </div>
+                </div>
+                <!-- 面板 编辑 结束 -->
+            </div>
+        </div>
+        <!-- content end -->
+    </div>
+
+    <script type="text/javascript">
+    //模态对话框
+        $("#clones").click(function() {
+            var d = dialog({
+                width: 460,
+                title: '批量克隆奖项',
+                content: `
+                        <form class="form-inline mt10 mb5">
+                            <div class="m10">
+                                <div class="form-group">
+                                    <label for="award">奖项名称：</label>
+                                    <input type="text" class="form-control" id="award" placeholder="输入奖项名">
+                                    <input type="hidden" id="award_value">
+                                </div>
+                                <div class="form-group">
+                                    <label for="award_new">替换为：</label>
+                                    <input type="text" class="form-control" id="award_new" placeholder="输入奖项名">
+                                    <input type="hidden" id="award_new_value">
+                                </div>
+                            </div>
+                            <div class="m10">
+                                <div class="form-group">
+                                    <label class="">所属组织：</label>
+                                    <select name="" id="" class="form-control">
+                                        <option value="0">不限</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                    <input type="hidden" id="status_value">
+                                </div>
+                            </div>
+                            <div class="m10">
+                                <div class="form-group">
+                                    <label for="begin_date">开始时间：</label>
+                                    <input type="text" class="form-control" id="begin_date" placeholder="输入开始时间">
+                                    <input type="hidden" id="begin_date_value">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_date">结束时间：</label>
+                                    <input type="text" class="form-control" id="end_date" placeholder="输入结束时间">
+                                    <input type="hidden" id="end_date_value">
+                                </div>
+                            </div>
+                        </form>`,
+                okValue: '确定',
+                ok: function() {
+                    // do something
+                },
+                cancelValue: '取消',
+                cancel: function() {
+                    // do something
+                }
+            });
+            d.showModal();
+        });
+    </script>
+</%block>
+
+<!--<form class="form-inline mt10 mb5">-->
+	<!--<div class="m10">-->
+		<!--<div class="form-group">-->
+			<!--<label for="award">奖项名称：</label>-->
+			<!--<input type="text" class="form-control" id="award" placeholder="输入奖项名">-->
+			<!--<input type="hidden" id="award_value">-->
+		<!--</div>-->
+		<!--<div class="form-group">-->
+			<!--<label for="award_new">替换为：</label>-->
+			<!--<input type="text" class="form-control" id="award_new" placeholder="输入奖项名">-->
+			<!--<input type="hidden" id="award_new_value">-->
+		<!--</div>-->
+	<!--</div>-->
+	<!--<div class="m10">-->
+		<!--<div class="form-group">-->
+			<!--<label for="begin_date">开始时间：</label>-->
+			<!--<input type="text" class="form-control" id="begin_date" placeholder="输入开始时间">-->
+			<!--<input type="hidden" id="begin_date_value">-->
+		<!--</div>-->
+		<!--<div class="form-group">-->
+			<!--<label for="end_date">结束时间：</label>-->
+			<!--<input type="text" class="form-control" id="end_date" placeholder="输入结束时间">-->
+			<!--<input type="hidden" id="end_date_value">-->
+		<!--</div>-->
+	<!--</div>-->
+<!--</form>-->
