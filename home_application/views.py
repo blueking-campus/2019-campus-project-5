@@ -49,7 +49,35 @@ def awards(request):
 def organizations(request):
     """组织管理页面"""
 
-    return render_mako_context(request, '/home_application/manage.html')
+    return render_mako_context(request, '/home_application/organizations.html')
+
+@require_http_methods('GET')
+@require_superuser
+def apply(request):
+    """我的申报页面"""
+
+    return render_mako_context(request, '/home_application/apply.html')
+
+@require_http_methods('GET')
+@require_superuser
+def review(request):
+    """我的审核页面"""
+
+    return render_mako_context(request, '/home_application/review.html')
+
+@require_http_methods('GET')
+@require_superuser
+def awards_review(request):
+    """我的审核页面"""
+
+    return render_mako_context(request, '/home_application/awards_review.html')
+
+@require_http_methods('GET')
+@require_superuser
+def clone(request):
+    """我的审核页面"""
+
+    return render_mako_context(request, '/home_application/clone.html')
 
 
 @require_http_methods('GET')
