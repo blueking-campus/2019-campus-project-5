@@ -9,4 +9,5 @@ urlpatterns = patterns(
     (r'^manage/organizations/$', 'organizations'),
     (r'^manage/$', 'manage'),
     (r'^personal/$', 'personal'),
+    (r'^api/all_awards/$', 'get_all_awards'),
 )

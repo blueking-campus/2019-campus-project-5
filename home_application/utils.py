@@ -26,6 +26,9 @@ def is_vaild_datetime(date):
     except ValueError, err:
         print err
         return False
+    except TypeError, err:
+        print err
+        return False
 
 
 def is_int(num):
@@ -34,5 +37,8 @@ def is_int(num):
         int(num)
         return True
     except ValueError, err:
+        print err
+        return False
+    except TypeError, err:
         print err
         return False
