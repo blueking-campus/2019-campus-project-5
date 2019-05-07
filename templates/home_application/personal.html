@@ -1,0 +1,242 @@
+<%inherit file="/base.html"/>
+
+<%block name='head'>
+	<title>个人中心</title>
+	${parent.head()}
+
+</%block>
+<%block name="content">
+<body class="bg-white" data-bg-color="bg-white">
+    <div class="king-page-box">
+        <div class="king-layout1-header"></div>
+        <div class="king-layout2-main mt15" style="width:960px;">
+            <div class="king-block king-block-bordered king-block-themed mb0">
+                <div class="king-block-header king-info">
+                    <ul class="king-block-options">
+                        <li>
+                            <!-- <button type="button"><i class="fa fa-cog"></i></button> -->
+                        </li>
+                    </ul>
+                    <h3 class="king-block-title">我的申报</h3>
+                </div>
+                <div class="king-block-content">
+                    <table class="table mb0 pr15 ranger-box2  ">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">所属单位</th>
+                                <th style="width: 15%;">申报奖项</th>
+                                <th style="width: 15%;">奖项状态</th>
+                                <th style="width: 15%;">申报人/团队</th>
+                                <th style="width: 15%;">申报状态</th>
+                                <th style="width: 15%;">申报时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width: 120px;">蓝鲸产品中心</td>
+                                <td style="width: 15%;">季度之星</td>
+                                <td style="width: 15%;">xxx</td>
+                                <td style="width: 15%;">审核中</td>
+                                <td style="width: 15%;">2017-11-20 20:00:00</td>
+                                <td style="width: 15%;">jianxue</td>
+                                <td>
+                                    <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
+                                    <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
+                                    <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
+                                </td>
+                            </tr>
+                        % for my_apply_award in my_apply_awards:
+							<tr>
+								<td style="width:20%;">${my_apply_award['organization__name']}</td>
+								<td style="width:20%;">${my_apply_award['name']}</td>
+								<td style="width:20%;">${my_apply_award['is_attached']}</td>
+								<td style="width:20%;">申请人/团队(applicant)</td>
+								<td style="width:42px;">申报状态(status)</td>
+                                <td style="width:42px;">申报时间(created_time)</td>
+							</tr>
+							% endfor
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <template id="header_tpl_15568559149162">
+                        <tr>
+                            <th style="width: 70px;">#index#</th>
+                            <th style="width: 15%;">#name#</th>
+                            <th style="width: 15%;">#position#</th>
+                            <th style="width: 15%;">#date#</th>
+                            <th style="width: 15%;">#type#</th>
+                            <th>操作</th>
+                        </tr>
+                    </template>
+                    <template id="tpl_15568559149162">
+                        <tr>
+                            <td style="width: 70px;">#index#</td>
+                            <td style="width: 15%;">#name#</td>
+                            <td style="width: 15%;">#position#</td>
+                            <td style="width: 15%;">#date#</td>
+                            <td style="width: 15%;">#type#</td>
+                            <td>
+                                <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
+                                <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
+                                <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
+                            </td>
+                        </tr>
+                    </template>
+                    <!-- 设置面板End -->
+                </div>
+            </div>
+            <div class="king-block king-block-bordered king-block-themed mb0">
+                <div class="king-block-header king-info">
+                    <ul class="king-block-options">
+                        <li>
+                            <!-- <button type="button"><i class="fa fa-cog"></i></button> -->
+                        </li>
+                    </ul>
+                    <h3 class="king-block-title">我的审核</h3>
+                </div>
+                <div class="king-block-content">
+                    <table class="table mb0 pr15 ranger-box2  ">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">所属单位</th>
+                                <th style="width: 15%;">申报奖项</th>
+                                <th style="width: 15%;">申报人/团队</th>
+                                <th style="width: 15%;">申报状态</th>
+                                <th style="width: 15%;">申报时间</th>
+                                <th style="width: 15%;">操作人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width: 120px;">蓝鲸产品中心</td>
+                                <td style="width: 15%;">季度之星</td>
+                                <td style="width: 15%;">xxx</td>
+                                <td style="width: 15%;">审核中</td>
+                                <td style="width: 15%;">2017-11-20 20:00:00</td>
+                                <td style="width: 15%;">jianxue</td>
+                                <td>
+                                    <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
+                                    <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
+                                    <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
+                                </td>
+                            </tr>
+                        % for my_review_awrd in my_review_awrds:
+							<tr>
+								<td style="width:20%;">${my_apply_award['organization__name']}</td>
+								<td style="width:20%;">${my_apply_award['name']}</td>
+                                <td style="width:20%;">申请人/团队(applicant)</td>
+                                <td style="width:42px;">审核状态(status)</td>
+                                <td style="width:42px;">申报时间(created_time)</td>
+								<td style="width:20%;">审核状态( 数据库表单好像没有)</td>
+							</tr>
+							% endfor
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <template id="header_tpl_15568559860392">
+                        <tr>
+                            <th style="width: 70px;">#index#</th>
+                            <th style="width: 15%;">#name#</th>
+                            <th style="width: 15%;">#position#</th>
+                            <th style="width: 15%;">#date#</th>
+                            <th style="width: 15%;">#type#</th>
+                            <th>操作</th>
+                        </tr>
+                    </template>
+                    <template id="tpl_15568559860392">
+                        <tr>
+                            <td style="width: 70px;">#index#</td>
+                            <td style="width: 15%;">#name#</td>
+                            <td style="width: 15%;">#position#</td>
+                            <td style="width: 15%;">#date#</td>
+                            <td style="width: 15%;">#type#</td>
+                            <td>
+                                <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
+                                <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
+                                <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
+                            </td>
+                        </tr>
+                    </template>
+                    <!-- 设置面板End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+                function renderTpl(str, cfg) {
+                    var re = /(#(.+?)#)/g;
+
+                    return str.replace(re, function() {
+                        var val = cfg[arguments[2]]+'';
+                        if(typeof val == 'undefined') {
+                            val = '';
+                        }
+                        return val;
+                    });
+                }
+
+                // 异步请求后台数据
+                $.ajax({
+                    url: 'https://o.qcloud.com/static_api/v3/components/table7/data.json',
+                    type: 'GET',
+                    success: function(res){
+                        var _html = ' ';
+                        var list = res.items;
+                        var tpl = $('#tpl_15568559149162').html();
+                        var headerTpl =  $('#header_tpl_15568559149162').html();
+                        for (var i=0,len=list.length; i < len; i++){
+                            var item = list[i];
+                            _html += renderTpl(tpl, item)
+                        }
+                        $('.ranger-box2 tbody').html(_html);
+                        $('.ranger-box2 thead').html(renderTpl(headerTpl,res.catalogues));
+                    }
+                });
+            });
+    </script>
+    <script>
+        $(function(){
+                function renderTpl(str, cfg) {
+                    var re = /(#(.+?)#)/g;
+
+                    return str.replace(re, function() {
+                        var val = cfg[arguments[2]]+'';
+                        if(typeof val == 'undefined') {
+                            val = '';
+                        }
+                        return val;
+                    });
+                }
+
+                // 异步请求后台数据
+                $.ajax({
+                    url: 'https://o.qcloud.com/static_api/v3/components/table7/data.json',
+                    type: 'GET',
+                    success: function(res){
+                        var _html = ' ';
+                        var list = res.items;
+                        var tpl = $('#tpl_15568559860392').html();
+                        var headerTpl =  $('#header_tpl_15568559860392').html();
+                        for (var i=0,len=list.length; i < len; i++){
+                            var item = list[i];
+                            _html += renderTpl(tpl, item)
+                        }
+                        $('.ranger-box2 tbody').html(_html);
+                        $('.ranger-box2 thead').html(renderTpl(headerTpl,res.catalogues));
+                    }
+                });
+            });
+    </script>
+</body>
+</%block>

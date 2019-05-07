@@ -1,0 +1,123 @@
+<%inherit file="/base.html"/>
+<%namespace name="navbar" file="/home_application/personal_nav.html"/>
+
+<%block name='head'>
+    <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
+    <!--datetimepicker-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
+
+
+	<title>奖项管理</title>
+	${parent.head()}
+
+</%block>
+<%block name="content">
+<body class="bg-white" data-bg-color="bg-white">
+    <div class="king-page-box">
+        <div class="king-layout1-header"></div>
+        <div class="king-layout2-main mt15" style="width:960px;">
+            <!-- <div class="king-page-topbar pl20 pr20 {{ marginStyle }}"> -->
+            <div class="king-page-topbar ">
+                <h3 class="king-topbar-title mb0">
+                    <span></span>
+                </h3>
+                <ul class="breadcrumb king-breadcrumb pl0 bg-transparent">
+                    <li><a href="javascript:void(0);">个人中心</a></li>
+                    <li><a href="javascript:void(0);">奖项申报</a></li>
+                </ul>
+            </div>
+            <!-- 面板 编辑 开始 -->
+            <!-- 面板 编辑 结束 -->
+            <div class="container-fluid mb0 ">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="king-block king-block-bordered king-block-themed mb0">
+                            <div class="king-block-header king-info">
+                                <ul class="king-block-options">
+                                    <li>
+                                        <!-- <button type="button"><i class="fa fa-cog"></i></button> -->
+                                    </li>
+                                </ul>
+                                <h3 class="king-block-title">奖项信息</h3>
+                            </div>
+                            <div class="king-block-content">
+                                <strong>奖项名称：</strong><br>
+                                <strong>评奖条件：</strong><br>
+                                <strong>奖金：2000</strong><br>
+                                <strong>审核人：</strong><br>
+                                <strong>状态：</strong><br>
+                                <strong>奖项级别：</strong><br>
+                                <strong>所属组织：</strong><br>
+                                <strong>开始日期：</strong><br>
+                                <strong>结束日期：</strong><br>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <form class="form-horizontal">
+                            <div class="form-group clearfix ">
+                                <label class="col-sm-3 control-label bk-lh30 pt0">申报人/团队：</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control bk-valign-top" id="" placeholder="提示信息"> </div>
+                            </div>
+                        </form>
+                        <form class="form-horizontal">
+                            <div class="form-group has-feedback clearfix ">
+                                <label class="control-label col-sm-3 pt0" for="introduction">事迹介绍：</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" rows="3" placeholder="提示信息"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                        <form class="form-horizontal">
+                            <div class="form-group clearfix ">
+                                <label class="control-label col-sm-3 pt0 bk-h30 bk-lh30">答辩PPT：</label>
+                                <div class="col-sm-9">
+                                    <button class="king-btn king-default king-file-btn king-btn-small bk-mt3 bk-block"> 选择文件
+                                        <input type="file"> </button>
+                                </div>
+                            </div>
+                        </form>
+                        <form class="form-horizontal">
+                            <div class="form-group clearfix ">
+                                <label class="control-label col-sm-3 bk-lh30 pt0">评奖结果：</label>
+                                <div class="col-sm-9">
+                                    <div class="radio pt0">
+                                        <label class="mr10">
+                                            <input type="radio" name="optionsRadios" id="" class="bk-top5" value="获奖">
+                                            <span class="bk-lh30">获奖</span>
+                                        </label>
+                                        <label class="mr10">
+                                            <input type="radio" name="optionsRadios" id="" class="bk-top5" value="未获奖">
+                                            <span class="bk-lh30">未获奖</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form class="form-horizontal">
+                            <div class="form-group has-feedback clearfix ">
+                                <label class="control-label col-sm-3 pt0" for="introduction">评语：</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" rows="3" placeholder="提示信息"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                        <form class="form-horizontal">
+                            <div class="form-group clearfix">
+                                <div class="col-sm-9 col-sm-offset-3">
+                                    <button type="button" class="king-btn mr10  king-success">提交</button>
+                                    <button type="button" class="king-btn king-default ">取消</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</%block>

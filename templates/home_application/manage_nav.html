@@ -1,0 +1,39 @@
+<%block name="navbar">
+    <%
+        home = award = organization =  ''
+        relative_path = APP_PATH
+        if relative_path == SITE_URL or relative_path.startswith(SITE_URL + "?"):
+            home = 'king-navbar-active active'
+        elif relative_path.startswith(SITE_URL + "manage/awards/"):
+            award = 'king-navbar-active active'
+        elif relative_path.startswith(SITE_URL + "manage/organizations/"):
+            organization = 'king-navbar-active active'
+    %>
+    <!-- 左边 start -->
+    <div class="king-layout1-sidebar column" style="width:216px;">
+        <nav style="overflow:hidden;">
+            <div class="king-vertical-nav9    f14">
+                <div class="navbar-collapse navbar-hov">
+                    <ul class="nav navbar-nav side-nav">
+                        <li class="${home}">
+                            <a href="/"> <i class="fa fa-dashboard ">                            </i>
+                                <span>首页</span> <i class="fa fa-fw "></i> </a>
+                            <ul id="" class="collapse"> </ul>
+                        </li>
+                        <li class="${organization}">
+                            <a href="/manage/organizations/"> <i class="fa fa-wrench ">                            </i>
+                                <span>组织管理</span> <i class="fa fa-fw "></i> </a>
+                            <ul id="" class="collapse"> </ul>
+                        </li>
+                        <li class="${award}">
+                            <a href="/manage/awards/"> <i class="fa fa-edit ">                            </i>
+                                <span>奖项管理</span> <i class="fa fa-fw "></i> </a>
+                            <ul id="" class="collapse"> </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- 左边 end -->
+</%block>
