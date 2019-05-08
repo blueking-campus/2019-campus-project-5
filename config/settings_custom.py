@@ -10,6 +10,7 @@ from config.settings_env import APP_CODE, APP_PWD, DB_HOST_DFT, DB_PORT_DFT
 # ==============================================================================
 # 自定义中间件
 MIDDLEWARE_CLASSES_CUSTOM = (
+    'home_application.middleware.LoginQQMiddleware',
 )
 # 自定义APP
 INSTALLED_APPS_CUSTOM = (
