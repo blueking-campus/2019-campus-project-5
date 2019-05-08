@@ -22,7 +22,7 @@ def login_qq(request):
 
 def api_login_qq(request):
     """手动添加qq"""
-    qq = request.GET.get('qq');
+    qq = request.POST.get('qq');
     username = request.user
     print username, qq
     user = User()

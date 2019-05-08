@@ -65,7 +65,7 @@
         });
         $('#submit').click(function () {
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "/api/login_qq/",
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                 data: {qq:$("#qq").val()},
