@@ -15,6 +15,9 @@
         <link href="${REMOTE_STATIC_URL}v3/assets/kendoui-2015.2.624/styles/kendo.metro.min.css" rel="stylesheet">
         <!-- 平台cs     -->
         <link href="${REMOTE_STATIC_URL}v3/bk/css/bk.css" rel="stylesheet">
+
+        <script src="http://o.qcloud.com/static_api/csrftoken_v3.js"></script>
+
         <style>
             /*如果你需要给你的应用固定高度和宽度，请在这里修改*/
             body {min-width:1202px;}
@@ -54,9 +57,9 @@
                         <!--<li class="${home}"><a href="${SITE_URL}"><span style="color: white;">首页</span></a></li>-->
                         <li class="${apply}"><a href="${SITE_URL}"><span style="color: white;">奖项申报</span></a></li>
                         % if user.is_superuser:
-                        <li class="${manage}"><a href="${SITE_URL}manage/"><span style="color: white;">系统管理</span></a></li>
+                        <li class="${manage}"><a href="${SITE_URL}manage/organizations/"><span style="color: white;">系统管理</span></a></li>
                         % endif
-                        <li class="${personal}"><a href="${SITE_URL}personal/"><span style="color: white;">个人中心</span></a></li>
+                        <li class="${personal}"><a href="${SITE_URL}personal/apply/"><span style="color: white;">个人中心</span></a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <a href="###" style="color: #898989;font-size:14px;line-height: 48px;padding: 0 15px;">
