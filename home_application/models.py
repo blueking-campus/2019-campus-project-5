@@ -2,8 +2,9 @@
 import json
 import datetime
 
-from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
+from django.db.models import Q
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -11,11 +12,33 @@ from django.core.paginator import PageNotAnInteger
 
 from home_application.utils import DateJSONEncoder
 
+class UserManager(models.Manager):
+    """用户管理"""
+    def username_exist(self, username):
+        """username是否存在"""
+        try:
+            super(models.Manager, self).get(username=username)
+            return True
+        except ObjectDoesNotExist, err:
+            print err
+            return False
+
+
+    def qq_exist(self, qq):
+        """qq是否存在"""
+        try:
+            super(models.Manager, self).get(qq=qq)
+            return True
+        except ObjectDoesNotExist, err:
+            print err
+            return False
 
 class User(models.Model):
     """用户关联表"""
     username = models.CharField(max_length=64, verbose_name=u'用户名', unique=True)
     qq = models.CharField(max_length=64, verbose_name=u'qq号码', unique=True)
+
+    objects = UserManager()
 
     class Mate:
         verbose_name = u'用户关联'
@@ -24,6 +47,21 @@ class User(models.Model):
     def get_qq(self):
         """获取qq"""
         return self.qq
+
+    def save_qq(self, username, qq):
+        try:
+            with transaction.atomic():
+                self.username = username
+                self.qq = qq
+                self.save()
+        except Exception, err:
+            # 数据库操作失败，创建组织失败
+            print err
+            return False
+        else:
+            # 创建组织成功
+            return True
+
 
 
 class Level(models.Model):
@@ -144,9 +182,11 @@ class AwardManager(models.Manager):
         if stauts == 1:
             # 查询奖项状态
             # status: (0, 不限)， (1, 过期), (2, 生效)
-            awards = awards.filter(is_active=False)
+            now = datetime.datetime.now()
+            awards = awards.filter(Q(begin_time__gte=now) | Q(end_time__lte=now))
         elif stauts == 2:
-            awards = awards.filter(is_active=True)
+            now = datetime.datetime.now()
+            awards = awards.filter(begin_time__lte=now, end_time__gte=now)
         if date_time:
             # 查询时间
             date_time = datetime.datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
@@ -158,17 +198,21 @@ class AwardManager(models.Manager):
         response['total'] = paginator.count
         response['page_size'] = page_size
         response['page'] = page
+        print response
         try:
             awards = paginator.page(page).object_list
         except PageNotAnInteger:
             awards = paginator.page(1).object_list
         except EmptyPage:
             awards = paginator.page(paginator.num_pages).object_list
+        except ZeroDivisionError:
+            response['awards'] = []
+            return response
 
         # 格式化数据
-        awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
-        data = awards.values('key', 'requirement', 'level__name',
-                            'organization__name', 'status', 'begin_time',
+        # awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
+        data = awards.values('key', 'name', 'requirement', 'level__name',
+                            'organization__name', 'is_active', 'begin_time',
                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
@@ -182,19 +226,21 @@ class AwardManager(models.Manager):
         except ObjectDoesNotExist, err:
             print err
             return []
-        awards = super(models.Manager, self).filter(organization__applicant__contains=qq, is_active=is_active)
+        awards = super(models.Manager, self).filter(is_deleted=False)
+        if is_active:
+            now = datetime.datetime.now()
+            awards = awards.filter(begin_time__lte=now, end_time__gte=now)
+        else:
+            now = datetime.datetime.now()
+            awards = awards.filter(Q(begin_time__gte=now) | Q(end_time__lte=now))
         # 格式化数据
         # awards.extra(select={'status': "if is_active '生效中' else '已过期')"})
         data = awards.values('key', 'name', 'requirement', 'level__name',
-                            'organization__name', 'is_active', 'begin_time',
+                            'organization__name', 'begin_time',
                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
         return data
-
-    def creat(self):
-        """创建奖项"""
-        pass
 
 
 class Award(models.Model):
@@ -235,6 +281,27 @@ class Award(models.Model):
         else:
             return True
 
+    def creat(self, *args, **kwargs):
+        """创建奖项"""
+        # name, requirement, level, organization, begin_time, end_time, is_attached
+        name = kwargs.get('name')
+        requirement = kwargs.get('requirement')
+        level = kwargs.get('level')
+        organization = kwargs.get('organization')
+        begin_time = kwargs.get('begin_time')
+        end_time = kwargs.get('end_time')
+        is_attached = kwargs.get('is_attached')
+
+        # self.name = name
+        # self.requirement = requirement
+        #
+        # self.level = level
+        # self.requirement = requirement
+        # self.name = name
+        # self.requirement = requirement
+        # self.name = name
+        # self.requirement = requirement
+
 
 class ApplicationManager(models.Manager):
     """申请管理类"""
@@ -250,7 +317,10 @@ class ApplicationManager(models.Manager):
         except ObjectDoesNotExist, err:
             print err
             return []
-        apps = Application.objects.all().filter(status=4, award__organization__applicant__contains=qq)
+        now = datetime.datetime.now()
+        apps = Application.objects.all().filter(award__organization__applicant__contains=qq, status=4)
+        apps = apps.filter(Q(award__begin_time__gte=now) | Q(award__end_time__lte=now))
+
         data = apps.values('key', 'award__organization__name', 'award__name', 'created_time', 'applicant')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)

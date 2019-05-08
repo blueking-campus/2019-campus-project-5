@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>QQ记录</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <!-- 若您需要使用Kendo UI Professional，请联系版权人获得合法的授权或许可。 -->
+    <!-- Bootstrap css -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <!-- kendo ui css -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.default.min.css" rel="stylesheet">
+    <!-- font-awesome -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/fontawesome/css/font-awesome.css" rel="stylesheet">
+    <!--蓝鲸提供的公用样式库 -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css/bk.css" rel="stylesheet">
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css/bk_pack.css" rel="stylesheet">
+    <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
+    <!-- 包括所有bootstrap的js插件或者可以根据需要使用的js插件调用　-->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/echarts-2.0/echarts-all.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <!-- 包括所有kendoui的js插件或者可以根据需要使用的js插件调用　-->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/js/kendo.all.min.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/echarts-2.0/echarts-all.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/bk/js/bk.js"></script>
+    <!-- 数据埋点统计 -->
+    <script src="http://magicbox.bk.tencent.com/static_api/analysis.js"></script>
+    <!-- 以下两个插件用于在IE8以及以下版本浏览器支持HTML5元素和媒体查询，如果不需要用可以移除 -->
+    <!--[if lt IE 9]><script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/html5shiv.min.js"></script><script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/respond.min.js"></script><![endif]-->
+
+    <!-- 跨域 -->
+    <script src="http://o.qcloud.com/static_api/csrftoken_v3.js"></script>
+</head>
+
+<body class="bg-white" data-bg-color="bg-white">
+    <div class="king-page-box mt50">
+        <div class="king-container clearfix">
+            <div class="king-exception-box king-login-page">
+                <img src="https://magicbox.bk.tencent.com/static_api/v3/components/exception_login/images/expre_login.png">
+                <h1>获取cookie中的qq失败</h1>
+                <!--<p>请手动输入你的qq号</p>-->
+                <form class="form-inline mt10" onsubmit="return false;">
+                    <div class="form-group clearfix ">
+                        <label class="col-sm-3 control-label bk-lh30 pt0">QQ：</label>
+                        <input type="text" class="form-control bk-valign-top" id="qq" placeholder="请手动输入你的qq号">
+                    </div>
+                    <div class="form-group clearfix">
+                        <button type="button" class="king-btn mr10  king-success" id="submit" >保存</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $('#qq').keydown(function (event) {
+            if(event.key==="Enter"){
+                $('#submit').click();
+            }
+
+        });
+        $('#submit').click(function () {
+            $.ajax({
+                type: "GET",
+                url: "/api/login_qq/",
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {qq:$("#qq").val()},
+                dataType: "json",
+                success: function(data){
+                    console.log(data);
+                    alert(data.responseText)
+                },
+                error: function(e){
+                    if(e.status==500){
+                        alert(e.responseText)
+                    }else if(e.status==302){
+                        ocation.href = e.responseText
+                    }
+                    console.log(e);
+                }
+            });
+        })
+    </script>
+</body>
+
+</html>
