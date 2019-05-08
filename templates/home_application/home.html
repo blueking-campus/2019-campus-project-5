@@ -74,13 +74,13 @@
 								<td style="width:20%;">申请人/团队</td>
 								<td style="width:42px;">申请详情</td>
 							</tr>
-							% for viewable_award in viewable_awards:
+							% for outdated_award in outdated_awards:
 							<tr>
-								<td style="width:20%;">${viewable_award['organization__name']}</td>
-								<td style="width:20%;">${viewable_award['organization__name']}name</td>
-								<td style="width:20%;">申请时间</td>
-								<td style="width:20%;">申请人/团队</td>
-								<td style="width:42px;"><a href="#">详情</a></td>
+								<td style="width:20%;">${outdated_award['organization__name']}</td>
+								<td style="width:20%;">${outdated_award['organization__name']}</td>
+								<td style="width:20%;">${outdated_award['created_time']}</td>
+								<td style="width:20%;">${outdated_award['applicant']}</td>
+								<td style="width:42px;"><a href="application/${outdated_award['key']}/">详情</a></td>
 							</tr>
 							% endfor
 						</tbody>
