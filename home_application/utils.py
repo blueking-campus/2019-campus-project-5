@@ -2,6 +2,11 @@
 import json
 import time
 import datetime
+import uuid
+
+from django.core.urlresolvers import reverse
+
+# from home_application.urls_settings import urls
 
 
 class DateJSONEncoder(json.JSONEncoder):
@@ -14,6 +19,14 @@ class DateJSONEncoder(json.JSONEncoder):
             return o.strftime("%Y-%m-%d")
         else:
             return json.JSONEncoder.default(self, o)
+
+
+def generateUUID(prefx=''):
+    """生成uuid的hex"""
+    newUuidHex = uuid.uuid4().hex
+    newUuid = prefx + newUuidHex
+    return newUuid
+
 
 def is_vaild_datetime(date):
     """
@@ -42,3 +55,53 @@ def is_int(num):
     except TypeError, err:
         print err
         return False
+
+
+def get_url_list(name_lsit):
+    """
+    获取url_list
+    name_list's item: string:url_name or dirc:{'url_name': string, 'kwargs':dirc }
+    """
+    urls = {
+        'home': {
+            'url': reverse('home'),
+            'title': u'首页'
+        },
+        'manage': {
+            'url': '#',
+            'title': u'系统管理'
+        },
+        'manage_awards': {
+            'url': reverse('manage_awards'),
+            'title': u'奖项管理'
+        },
+        'manage_organizations': {
+            'url': reverse('manage_organizations'),
+            'title': u'组织管理'
+        },
+        'manage_add_award': {
+            'url': reverse('manage_add_award'),
+            'title': u'添加奖项'
+        },
+        'manage_show_award': {
+            'url': reverse('manage_show_award'),
+            'title': u'奖项详情'
+        },
+        'manage_change_award': {
+            'url': reverse('manage_change_award'),
+            'title': u'修改奖项'
+        }
+    }
+
+    url_list = []
+    for name in name_lsit:
+        if isinstance(name, dict):
+            url = urls.get(name['url_name'])
+            url['url'] = ''.join([url['url'][0:-1], '?'])
+            for key, value in name['kwargs'].items():
+                arg = '='.join([key, value, '&'])
+                url['url'] = ''.join([url['url'], arg])
+        else:
+            url = urls.get(name)
+        url_list.append(url)
+    return url_list

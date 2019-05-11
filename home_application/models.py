@@ -10,8 +10,9 @@ from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
-from home_application.utils import DateJSONEncoder
-
+from home_application.utils import (
+    DateJSONEncoder, generateUUID
+)
 class UserManager(models.Manager):
     """用户管理"""
     def username_exist(self, username):
@@ -62,16 +63,21 @@ class User(models.Model):
             # 创建组织成功
             return True
 
-
+class LevelManager(models.Manager):
+    """级别管理类"""
+    def all_list(self):
+        return super(models.Manager, self).all().values_list('name', flat=True)
 
 class Level(models.Model):
     """奖项级别"""
     name = models.CharField(max_length=64, verbose_name=u'级别', unique=True)
+    objects = LevelManager()
+
     class Mate:
         verbose_name = u'级别'
         verbose_name_plural = verbose_name
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -116,6 +122,15 @@ class OrganizationManager(models.Manager):
         response['organizations'] = data
         return response
 
+    def all_name_key(self):
+        """查询所有未逻辑删除的组织 只返回名字和key"""
+        orgs = super(models.Manager, self).filter(is_deleted=False)
+        # 格式化数据
+        data = orgs.values('key', 'name')
+        return data
+
+
+
 
 class Organization(models.Model):
     """组织"""
@@ -135,7 +150,7 @@ class Organization(models.Model):
         verbose_name = u'组织'
         verbose_name_plural = verbose_name
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     def logical_delete(self):
@@ -158,7 +173,8 @@ class Organization(models.Model):
                 self.applicant = applicant
                 self.manager = manager
                 self.save()
-        except Exception:
+        except Exception, err:
+            print 'Organization:updata update error:', err
             return False
         else:
             return True
@@ -167,7 +183,7 @@ class Organization(models.Model):
 class AwardManager(models.Manager):
     """奖项管理类"""
 
-    def all(self, name, organization, stauts, date_time, page=1, page_size=10):
+    def all(self, name, organization, status, date_time, page=1, page_size=10):
         """查询所有未逻辑删除的奖项"""
 
         # 所有未逻辑删除的奖项
@@ -179,14 +195,14 @@ class AwardManager(models.Manager):
         if organization:
             # 模糊查询组织名
             awards = awards.filter(organization__name__icontains=organization)
-        if stauts == 1:
+        if status == 1:
             # 查询奖项状态
             # status: (0, 不限)， (1, 过期), (2, 生效)
             now = datetime.datetime.now()
-            awards = awards.filter(Q(begin_time__gte=now) | Q(end_time__lte=now))
-        elif stauts == 2:
+            awards = awards.filter(Q(begin_time__gte=now) | Q(end_time__lte=now) | Q(is_active=False))
+        elif status == 2:
             now = datetime.datetime.now()
-            awards = awards.filter(begin_time__lte=now, end_time__gte=now)
+            awards = awards.filter(begin_time__lte=now, end_time__gte=now, is_active=True)
         if date_time:
             # 查询时间
             date_time = datetime.datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
@@ -195,9 +211,9 @@ class AwardManager(models.Manager):
         # 分页
         response = {}
         paginator = Paginator(awards, page_size)
-        response['total'] = paginator.count
-        response['page_size'] = page_size
-        response['page'] = page
+        response['recordsTotal'] = paginator.count
+        response['recordsFiltered'] = paginator.count
+
         print response
         try:
             awards = paginator.page(page).object_list
@@ -212,11 +228,11 @@ class AwardManager(models.Manager):
         # 格式化数据
         # awards.extra(select={'status': "IF(is_active, '生效中', '已过期')"})
         data = awards.values('key', 'name', 'requirement', 'level__name',
-                            'organization__name', 'is_active', 'begin_time',
-                            'end_time', 'apply_number', 'awarded_number')
+                             'organization__name', 'is_active', 'begin_time', 'is_attached',
+                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
-        response['awards'] = data
+        response['data'] = data
         return response
 
     def all_by_username(self, username, is_active=True):
@@ -224,23 +240,60 @@ class AwardManager(models.Manager):
         try:
             qq = User.objects.get(username=username).get_qq()
         except ObjectDoesNotExist, err:
-            print err
+            print 'AwardManager:all_by_username: get qq by username:', err
             return []
         awards = super(models.Manager, self).filter(is_deleted=False)
         if is_active:
             now = datetime.datetime.now()
-            awards = awards.filter(begin_time__lte=now, end_time__gte=now)
+            awards = awards.filter(begin_time__lte=now, end_time__gte=now, is_active=is_active)
         else:
             now = datetime.datetime.now()
-            awards = awards.filter(Q(begin_time__gte=now) | Q(end_time__lte=now))
+            awards = awards.filter(Q(begin_time__gte=now) | Q(end_time__lte=now) | Q(is_active=is_active))
         # 格式化数据
         # awards.extra(select={'status': "if is_active '生效中' else '已过期')"})
         data = awards.values('key', 'name', 'requirement', 'level__name',
-                            'organization__name', 'begin_time',
-                            'end_time', 'apply_number', 'awarded_number')
+                             'organization__name', 'is_active', 'begin_time', 'is_attached',
+                             'end_time', 'apply_number', 'awarded_number')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
         return data
+
+    def get_values(self, key):
+        """根据key返回对应的award的dirc格式数据"""
+        try:
+            award = super(models.Manager, self).get(key=key)
+            data = {
+                'key': award.key,
+                'name': award.name,
+                'requirement': award.requirement,
+                'level__name': award.level.name,
+                'organization__key': award.organization.key,
+                'is_active': award.is_active,
+                'begin_time': award.begin_time,
+                'is_attached': award.is_attached,
+                'end_time': award.end_time,
+                'apply_number': award.apply_number,
+                'awarded_number': award.awarded_number
+            }
+        except ObjectDoesNotExist, err:
+            print 'AwardManager:get_values award not exist', err
+            raise ObjectDoesNotExist('AwardManager:get_values award not exist:', err)
+        else:
+            return data
+
+
+
+    def delete(self, key_list):
+        """批量逻辑删除奖项"""
+        try:
+            with transaction.atomic():
+                super(models.Manager, self).filter(key__in=key_list).updata(is_deleted=True)
+        except Exception, err:
+            print 'Award:delete update error:', err
+            return False
+        else:
+            return True
+
 
 
 class Award(models.Model):
@@ -281,26 +334,83 @@ class Award(models.Model):
         else:
             return True
 
-    def creat(self, *args, **kwargs):
+    @classmethod
+    def create(cls, data, *args, **kwargs):
         """创建奖项"""
-        # name, requirement, level, organization, begin_time, end_time, is_attached
-        name = kwargs.get('name')
-        requirement = kwargs.get('requirement')
-        level = kwargs.get('level')
-        organization = kwargs.get('organization')
-        begin_time = kwargs.get('begin_time')
-        end_time = kwargs.get('end_time')
-        is_attached = kwargs.get('is_attached')
+        name = data.get('name')
+        requirement = data.get('requirement')
+        level__name = data.get('level__name')
+        organization__key = data.get('organization__key')
+        begin_time = data.get('begin_time')
+        end_time = data.get('end_time')
+        is_attached = data.get('is_attached')
+        is_active = data.get('is_active')
 
-        # self.name = name
-        # self.requirement = requirement
-        #
-        # self.level = level
-        # self.requirement = requirement
-        # self.name = name
-        # self.requirement = requirement
-        # self.name = name
-        # self.requirement = requirement
+        print level__name, type(level__name)
+        try:
+            level = Level.objects.get(name=level__name)
+            organization = Organization.objects.get(key=organization__key)
+        except ObjectDoesNotExist, err:
+            raise ObjectDoesNotExist('Award:create get level and organization error:', err)
+
+        try:
+            with transaction.atomic():
+                award = cls()
+                award.name = name
+                award.requirement = requirement
+                award.level = level
+                award.organization = organization
+                award.begin_time = begin_time
+                award.end_time = end_time
+                award.is_active = is_active
+                award.is_attached = is_attached
+                award.key = generateUUID()
+                award.is_deleted = False
+                award.awarded_number = 0
+                award.apply_number = 0
+                award.save()
+        except ValueError, err:
+            print 'Award:create save models err:', err
+            raise ValueError('Award:create save models err:', err)
+        else:
+            return True
+
+    @classmethod
+    def change(cls, data, *args, **kwargs):
+        """修改奖项"""
+        key = data.get('key')
+        name = data.get('name')
+        requirement = data.get('requirement')
+        level__name = data.get('level__name')
+        organization__key = data.get('organization__key')
+        begin_time = data.get('begin_time')
+        end_time = data.get('end_time')
+        is_attached = data.get('is_attached')
+        is_active = data.get('is_active')
+        try:
+            level = Level.objects.get(name=level__name)
+            organization = Organization.objects.get(key=organization__key)
+        except ObjectDoesNotExist, err:
+            raise ObjectDoesNotExist('Award:change get level and organization error:', err)
+        try:
+            award = cls.objects.get(key=key)
+            award.name = name
+            award.requirement = requirement
+            award.level = level
+            award.organization = organization
+            award.begin_time = begin_time
+            award.end_time = end_time
+            award.is_active = is_active
+            award.is_attached = is_attached
+            award.save()
+        except ObjectDoesNotExist, err:
+            print 'Award:change award key not exist:', err
+            raise ObjectDoesNotExist('Award:change award key not exist:', err)
+        except ValueError, err:
+            print 'Award:change error in save award:', err
+            raise ValueError('Award:change error in save award:', err)
+        else:
+            return True
 
 
 class ApplicationManager(models.Manager):
@@ -315,11 +425,11 @@ class ApplicationManager(models.Manager):
         try:
             qq = User.objects.get(username=username).get_qq()
         except ObjectDoesNotExist, err:
-            print err
+            print 'ApplicationManager:awarded get qq by username:', err
             return []
         now = datetime.datetime.now()
         apps = Application.objects.all().filter(award__organization__applicant__contains=qq, status=4)
-        apps = apps.filter(Q(award__begin_time__gte=now) | Q(award__end_time__lte=now))
+        apps = apps.filter(Q(award__begin_time__gte=now) | Q(award__end_time__lte=now) | Q(award__is_active=False))
 
         data = apps.values('key', 'award__organization__name', 'award__name', 'created_time', 'applicant')
         data = json.dumps(list(data), cls=DateJSONEncoder)
