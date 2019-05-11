@@ -1,4 +1,5 @@
 <%inherit file="/base.html"/>
+<%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
 	<title>奖项申报首页</title>
@@ -7,101 +8,89 @@
 </%block>
 
 <%block name="content">
-	<!--<div class="king-layout2-main mt15" style="width:960px;">-->
-		<!-- <div class="king-page-topbar pl20 pr20 {{ marginStyle }}"> -->
-		<div class="king-page-topbar m20">
-			<h3 class="king-topbar-title mb0">
-				<span></span>
-			</h3>
-			<ul class="breadcrumb king-breadcrumb pl0 bg-transparent">
-				<li><a href="/">首页</a></li>
+	${topbar.topbar()}
+	<div class="king-block king-block-bordered king-block-themed m20">
+		<div class="king-block-header king-default">
+			<ul class="king-block-options">
+				<li>
+					<!-- <button type="button"><i class="fa fa-cog"></i></button> -->
+				</li>
 			</ul>
+			<h3 class="king-block-title">可申请奖项</h3>
 		</div>
-		<!-- 面板 编辑 开始 -->
-		<!-- 面板 编辑 结束 -->
-		<div class="king-block king-block-bordered king-block-themed m20">
-			<div class="king-block-header king-default">
-				<ul class="king-block-options">
-					<li>
-						<!-- <button type="button"><i class="fa fa-cog"></i></button> -->
-					</li>
-				</ul>
-				<h3 class="king-block-title">可申请奖项</h3>
-			</div>
-			<div class="king-block-content">
-				<div class="container-fluid mb0 ">
-					<div class="row">
-						% for viewable_award in viewable_awards:
-						<div class="col-md-4">
-							<div class="king-widget2 king-widget-info king-widget-success m0">
-								<div class="king-widget-content p20">
-									<div class="king-counter king-counter-lg">
-										<input style="display: none" value="${viewable_award['key']}">
-										<div class="king-counter-number-group">
-											<span class="king-counter-number white">${viewable_award['organization__name']}</span>
-											<span class="king-counter-icon ml10"> <i class="fa fa-star-half-full"></i> </span>
-										</div>
-										<div class="king-counter-label text-uppercase f16">${viewable_award['name']}</div>
-										<div class="king-counter-label text-uppercase f16">申请人数：${viewable_award['apply_number']}</div>
+		<div class="king-block-content">
+			<div class="container-fluid mb0 ">
+				<div class="row">
+					% for viewable_award in viewable_awards:
+					<div class="col-md-4">
+						<div class="king-widget2 king-widget-info king-widget-success m0">
+							<div class="king-widget-content p20">
+								<div class="king-counter king-counter-lg">
+									<input style="display: none" value="${viewable_award['key']}">
+									<div class="king-counter-number-group">
+										<span class="king-counter-number white">${viewable_award['organization__name']}</span>
+										<span class="king-counter-icon ml10"> <i class="fa fa-star-half-full"></i> </span>
 									</div>
+									<div class="king-counter-label text-uppercase f16">${viewable_award['name']}</div>
+									<div class="king-counter-label text-uppercase f16">申请人数：${viewable_award['apply_number']}</div>
 								</div>
 							</div>
-							<!-- 设置面板Start -->
-							<!-- 设置面板End -->
 						</div>
-						% endfor
+						<!-- 设置面板Start -->
+						<!-- 设置面板End -->
 					</div>
+					% endfor
 				</div>
 			</div>
 		</div>
-		<div class="king-block king-block-bordered king-block-themed m20">
-			<div class="king-block-header king-default">
-				<ul class="king-block-options">
-					<li>
-						<!-- <button type="button"><i class="fa fa-cog"></i></button> -->
-					</li>
-				</ul>
-				<h3 class="king-block-title">已结束奖项</h3>
-			</div>
-			<div class="king-block-content">
-				<div style="height:310px; overflow: auto;" id="list_1556686530691" class="king-list3 m0">
-					<table class="king-list3-table ranger-box">
-						<tbody>
-							<tr>
-								<td style="width:20%;">所属单位</td>
-								<td style="width:20%;">申请奖项</td>
-								<td style="width:20%;">申请时间</td>
-								<td style="width:20%;">申请人/团队</td>
-								<td style="width:42px;">申请详情</td>
-							</tr>
-							% for outdated_award in outdated_awards:
-							<tr>
-								<td style="width:20%;">${outdated_award['organization__name']}</td>
-								<td style="width:20%;">${outdated_award['organization__name']}</td>
-								<td style="width:20%;">${outdated_award['created_time']}</td>
-								<td style="width:20%;">${outdated_award['applicant']}</td>
-								<td style="width:42px;"><a href="application/${outdated_award['key']}/">详情</a></td>
-							</tr>
-							% endfor
-						</tbody>
-					</table>
-				</div>
-				<!-- 设置面板Start -->
-				<template id="ranger_nodata_tpl">
-					<tr>
-						<td colspan="3"> 没有数据 </td>
-					</tr>
-				</template>
-				<template id="ranger_tpl">
-					<tr>
-						<td style="width:42px;">#index#</td>
-						<td style="width:40%;">#name#</td>
-						<td>#score#</td>
-					</tr>
-				</template>
-				<!-- 设置面板End -->
-			</div>
+	</div>
+	<div class="king-block king-block-bordered king-block-themed m20">
+		<div class="king-block-header king-default">
+			<ul class="king-block-options">
+				<li>
+					<!-- <button type="button"><i class="fa fa-cog"></i></button> -->
+				</li>
+			</ul>
+			<h3 class="king-block-title">已结束奖项</h3>
 		</div>
-	<!--</div>-->
+		<div class="king-block-content">
+			<div style="height:310px; overflow: auto;" id="list_1556686530691" class="king-list3 m0">
+				<table class="king-list3-table ranger-box">
+					<tbody>
+						<tr>
+							<td style="width:20%;">所属单位</td>
+							<td style="width:20%;">申请奖项</td>
+							<td style="width:20%;">申请时间</td>
+							<td style="width:20%;">申请人/团队</td>
+							<td style="width:42px;">申请详情</td>
+						</tr>
+						% for outdated_award in outdated_awards:
+						<tr>
+							<td style="width:20%;">${outdated_award['organization__name']}</td>
+							<td style="width:20%;">${outdated_award['organization__name']}</td>
+							<td style="width:20%;">${outdated_award['created_time']}</td>
+							<td style="width:20%;">${outdated_award['applicant']}</td>
+							<td style="width:42px;"><a href="application/${outdated_award['key']}/">详情</a></td>
+						</tr>
+						% endfor
+					</tbody>
+				</table>
+			</div>
+			<!-- 设置面板Start -->
+			<template id="ranger_nodata_tpl">
+				<tr>
+					<td colspan="3"> 没有数据 </td>
+				</tr>
+			</template>
+			<template id="ranger_tpl">
+				<tr>
+					<td style="width:42px;">#index#</td>
+					<td style="width:40%;">#name#</td>
+					<td>#score#</td>
+				</tr>
+			</template>
+			<!-- 设置面板End -->
+		</div>
+	</div>
 </%block>
 
