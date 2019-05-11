@@ -1,5 +1,6 @@
 <%inherit file="/base.html"/>
 <%namespace name="navbar" file="/home_application/manage_nav.html"/>
+<%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
     <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
@@ -16,18 +17,7 @@
 </%block>
 
 <%block name="content">
-    <!--面包板 开始-->
-    <!-- <div class="king-page-topbar pl20 pr20 {{ marginStyle }}"> -->
-    <div class="king-page-topbar m20">
-        <!--<h3 class="king-topbar-title mb0">-->
-            <!--<span>Breadcrumb</span>-->
-        <!--</h3>-->
-        <ul class="breadcrumb king-breadcrumb pl0 bg-transparent">
-            <li><a href="/manage/">系统管理</a></li>
-            <li><a href="/manage/organizations/">组织管理</a></li>
-        </ul>
-    </div>
-    <!--面包板 结束-->
+    ${topbar.topbar()}
     <div class="king-page-box king-layout1-main clearfix mt30">
         <!-- 左边 start -->
         ${navbar.navbar()}

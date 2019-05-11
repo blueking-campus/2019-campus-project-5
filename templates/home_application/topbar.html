@@ -1,0 +1,18 @@
+<%block name="topbar">
+    <!--面包板 开始-->
+    <!-- <div class="king-page-topbar pl20 pr20 {{ marginStyle }}"> -->
+    <div class="king-page-topbar m20">
+        <!--<h3 class="king-topbar-title mb0">-->
+            <!--<span>Breadcrumb</span>-->
+        <!--</h3>-->
+        <ul class="breadcrumb king-breadcrumb pl0 bg-transparent">
+            % for url in router:
+            <li><a href="${url['url']}">${url['title']}</a></li>
+            % endfor
+            <!--<li><a href="/manage/">系统管理</a></li>-->
+            <!--<li><a href="/manage/awards/">奖项管理</a></li>-->
+            <!--<li><a href="/manage/awards/add/">添加奖项</a></li>-->
+        </ul>
+    </div>
+    <!--面包板 结束-->
+</%block>
