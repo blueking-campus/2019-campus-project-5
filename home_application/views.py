@@ -239,9 +239,9 @@ def api_all_awards(request):
     print status
     datetime = request.POST.get('datetime', '').replace('&nbsp;', ' ')
 
-    awards = Award.objects.all(page=page, page_size=page_size, date_time=datetime, name=name, organization=organization, status=status)
-    awards['draw'] = draw
-    return JsonResponse(awards)
+    awards_ = Award.objects.all(page=page, page_size=page_size, date_time=datetime, name=name, organization=organization, status=status)
+    awards_['draw'] = draw
+    return JsonResponse(awards_)
 
 @require_http_methods('POST')
 @require_superuser
@@ -311,4 +311,12 @@ def api_change_award(request):
 @require_superuser
 def api_delete_award(request):
     """api 删除award"""
-    return HttpResponse('OK')
+    key_list = request.POST.getlist('key[]');
+    print request.POST
+    print key_list
+    try:
+        Award.objects.delete(key_list)
+    except Exception, err:
+        print err
+        return HttpResponse('删除失败', status=500)
+    return HttpResponse('删除成功')

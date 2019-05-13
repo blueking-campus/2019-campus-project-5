@@ -186,9 +186,9 @@
                                     <a class="king-btn-demo king-btn king-btn-icon king-round king-warning" title="编辑" href="${manage_change_award}?award__key=` +data.key+`">
                                         <i class="fa fa-cog btn-icon"></i>
                                     </a>
-                                    <a class="king-btn-demo king-btn king-btn-icon king-round king-danger" title="删除" href="${api_delete_award}?award__key=`+data.key+`">
+                                    <button class="king-btn-demo king-btn king-btn-icon king-round king-danger" title="删除" onclick='delete_award("`+data.key+`")' name="delete_btn">
                                         <i class="fa fa-close btn-icon"></i>
-                                    </a>
+                                    </button>
                                 </div>`
                     return content;
                 }
@@ -265,5 +265,35 @@
 
             table.ajax.reload();
         })
+
+        // 删除按钮
+        // $('button[name=delete_btn]').click(function () {
+        //     console.log($(this).val());
+        // })
+        let api = $('#awards_table').DataTable();
+        function delete_award(key) {
+            let res = confirm("确认删除奖项？");
+            if (res){
+                $.ajax({
+                    type: "POST",
+                    url: "${api_delete_award}",
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {'key': [key]},
+                    dataType: "text",
+                    success: function(data){
+                        alert(data);
+                        api.ajax.reload();
+                    },
+                    error: function(e){
+                        if(e.status==302){
+                            location.href = e.responseText
+                        } else {
+                            alert(e.responseText)
+                        }
+                    }
+                });
+            }
+            console.log(key);
+        }
     </script>
 </%block>

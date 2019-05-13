@@ -110,11 +110,11 @@ class OrganizationManager(models.Manager):
         paginator = Paginator(orgs, page_size)
         response['total'] = paginator.count
         try:
-            orgs = paginator.page(page)
+            orgs = paginator.page(page).object_list
         except PageNotAnInteger:
-            orgs = paginator.page(1)
+            orgs = paginator.page(1).object_list
         except EmptyPage:
-            orgs = paginator.page(paginator.num_pages)
+            orgs = paginator.page(paginator.num_pages).object_list
         # 格式化数据
         data = orgs.values('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
         data = json.dumps(list(data), cls=DateJSONEncoder)
@@ -277,20 +277,20 @@ class AwardManager(models.Manager):
             }
         except ObjectDoesNotExist, err:
             print 'AwardManager:get_values award not exist', err
-            raise ObjectDoesNotExist('AwardManager:get_values award not exist:', err)
+            info = 'AwardManager:get_values award not exist'
+            raise ObjectDoesNotExist('%s %s' % (info, err))
         else:
             return data
-
-
 
     def delete(self, key_list):
         """批量逻辑删除奖项"""
         try:
             with transaction.atomic():
-                super(models.Manager, self).filter(key__in=key_list).updata(is_deleted=True)
+                super(models.Manager, self).filter(key__in=key_list, is_deleted=False).update(is_deleted=True)
         except Exception, err:
             print 'Award:delete update error:', err
-            return False
+            info = 'Award:delete update error:'
+            raise Exception('%s %s' % (info, err))
         else:
             return True
 
@@ -351,7 +351,9 @@ class Award(models.Model):
             level = Level.objects.get(name=level__name)
             organization = Organization.objects.get(key=organization__key)
         except ObjectDoesNotExist, err:
-            raise ObjectDoesNotExist('Award:create get level and organization error:', err)
+            info = 'Award:create get level and organization error:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
 
         try:
             with transaction.atomic():
@@ -370,8 +372,9 @@ class Award(models.Model):
                 award.apply_number = 0
                 award.save()
         except ValueError, err:
-            print 'Award:create save models err:', err
-            raise ValueError('Award:create save models err:', err)
+            info = 'Award:create save models err:'
+            print info, err
+            raise ValueError('%s %s' % (info, err))
         else:
             return True
 
@@ -391,7 +394,9 @@ class Award(models.Model):
             level = Level.objects.get(name=level__name)
             organization = Organization.objects.get(key=organization__key)
         except ObjectDoesNotExist, err:
-            raise ObjectDoesNotExist('Award:change get level and organization error:', err)
+            info = 'Award:change get level and organization error:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
         try:
             award = cls.objects.get(key=key)
             award.name = name
@@ -404,11 +409,13 @@ class Award(models.Model):
             award.is_attached = is_attached
             award.save()
         except ObjectDoesNotExist, err:
-            print 'Award:change award key not exist:', err
-            raise ObjectDoesNotExist('Award:change award key not exist:', err)
+            info = 'Award:change award key not exist:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
         except ValueError, err:
-            print 'Award:change error in save award:', err
-            raise ValueError('Award:change error in save award:', err)
+            info = 'Award:change error in save award:'
+            print info, err
+            raise ValueError('%s %s' % (info, err))
         else:
             return True
 
