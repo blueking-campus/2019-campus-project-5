@@ -3,17 +3,28 @@
 <%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
+	<title>组织管理</title>
     <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
     <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
+    ${parent.head()}
+
     <!--datetimepicker-->
     <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/bootstrap-datetimepicker.js"></script>
     <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
 
 
-	<title>奖项管理</title>
-	${parent.head()}
+    <!--datatables-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.css" rel="stylesheet"/>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/jquery.dataTables.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.js"></script>
 
+     <!--模态对话框-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/css/ui-dialog.css" rel="stylesheet">
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/dist/dialog-min.js"></script>
+
+    <!-- 按钮图标 -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/fontawesome/css/font-awesome.min.css" rel="stylesheet">
 </%block>
 
 <%block name="content">
@@ -33,150 +44,18 @@
                     <div class="panel-body">
                         <!--内联表单 开始-->
 
+                        <div id="toolbar">
+                            <form class="form-inline mt10 mb5">
+
+
+
+
+
+                                <button type="button" class="king-btn king-info" id="new_add">新增</button>
+                            </form>
+                        </div>
                         <!--内联表单 结束-->
-
-                         <section class="m10">
-                            <div class="form-group clearfix">
-                                <div class="col-sm-12">
-                                    <div class="bk-horizontal-line"></div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <table class="table mb0 pr15 ranger-box2">
-                            <thead>
-                                <tr>
-                                <th style="width: 120px;">所属组织</th>
-                                <th style="width: 15%;">负责人</th>
-                                <th style="width: 15%;">参评人员</th>
-                                <th style="width: 15%;">更新人</th>
-                                <th style="width: 15%;">申报时间</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="width: 70px;">1</td>
-                                    <td style="width: 15%;">Ravi Kumar</td>
-                                    <td style="width: 15%;">India</td>
-                                    <td style="width: 15%;">23/12/2012</td>
-                                    <td style="width: 15%;">Paid</td>
-                                    <td>
-                                        <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                        <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                        <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 70px;">2</td>
-                                    <td style="width: 15%;">Ravi Kumar</td>
-                                    <td style="width: 15%;">India</td>
-                                    <td style="width: 15%;">23/12/2012</td>
-                                    <td style="width: 15%;">Paid</td>
-                                    <td>
-                                        <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                        <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                        <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 70px;">3</td>
-                                    <td style="width: 15%;">Ravi Kumar</td>
-                                    <td style="width: 15%;">India</td>
-                                    <td style="width: 15%;">23/12/2012</td>
-                                    <td style="width: 15%;">Paid</td>
-                                    <td>
-                                        <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                        <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                        <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 70px;">4</td>
-                                    <td style="width: 15%;">Ravi Kumar</td>
-                                    <td style="width: 15%;">India</td>
-                                    <td style="width: 15%;">23/12/2012</td>
-                                    <td style="width: 15%;">Paid</td>
-                                    <td>
-                                        <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                        <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                        <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 70px;">5</td>
-                                    <td style="width: 15%;">Ravi Kumar</td>
-                                    <td style="width: 15%;">India</td>
-                                    <td style="width: 15%;">23/12/2012</td>
-                                    <td style="width: 15%;">Paid</td>
-                                    <td>
-                                        <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                        <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                        <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 70px;">6</td>
-                                    <td style="width: 15%;">Ravi Kumar</td>
-                                    <td style="width: 15%;">India</td>
-                                    <td style="width: 15%;">23/12/2012</td>
-                                    <td style="width: 15%;">Paid</td>
-                                    <td>
-                                        <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                        <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                        <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <!--分页条 开始-->
-                        <nav style="text-align: center" class="mt10">
-                            <ul class="pagination">
-                                <li class="disabled">
-                                    <a href="javascript:;" aria-label="Previous">
-                                        <span aria-hidden="true">«</span>
-                                    </a>
-                                </li>
-                                <li class="active"><a href="javascript:;">1</a></li>
-                                <li><a href="javascript:;">2</a></li>
-                                <li><a href="javascript:;">3</a></li>
-                                <li><a href="javascript:;">4</a></li>
-                                <li><a href="javascript:;">5</a></li>
-                                <li>
-                                    <a href="javascript:;" aria-label="Next">
-                                        <span aria-hidden="true">»</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                        <!--分页条 结束-->
-
-                        <template id="header_tpl_15570707807532">
-                            <tr>
-                                <th style="width: 70px;">#index#</th>
-                                <th style="width: 15%;">#name#</th>
-                                <th style="width: 15%;">#position#</th>
-                                <th style="width: 15%;">#date#</th>
-                                <th style="width: 15%;">#type#</th>
-                                <th>操作</th>
-                            </tr>
-                        </template>
-                        <template id="tpl_15570707807532">
-                            <tr>
-                                <td style="width: 70px;">#index#</td>
-                                <td style="width: 15%;">#name#</td>
-                                <td style="width: 15%;">#position#</td>
-                                <td style="width: 15%;">#date#</td>
-                                <td style="width: 15%;">#type#</td>
-                                <td>
-                                    <button class="btn btn-xs btn-success"> <i class="glyphicon glyphicon-ok"></i> </button>
-                                    <button class="btn btn-xs btn-warning"> <i class="glyphicon glyphicon-edit"></i> </button>
-                                    <button class="btn btn-xs btn-danger"> <i class="glyphicon glyphicon-remove"></i> </button>
-                                </td>
-                            </tr>
-                        </template>
-                        <!-- 设置面板End -->
+                        <table id="organizations_table" class="table table-bordered table-hover dataTable no-footer" role="grid"></table>
                     </div>
                 </div>
                 <!-- 面板 编辑 结束 -->
@@ -184,10 +63,18 @@
         </div>
         <!-- content end -->
     </div>
-<body class="bg-white" data-bg-color="bg-white">
+
+    <script type="text/javascript">
+        //模态对话框
+        $("#new_add").click(function() {
+            var d = dialog({
+                width: 460,
+                title: '新增组织',
+                content: `
+                        <body class="bg-white" data-bg-color="bg-white">
     <div class="king-page-box">
         <div class="king-layout1-header"></div>
-        <div class="king-layout2-main mt15" style="width:960px;">
+        <div class="king-layout2-main mt15" style="width:420px;">
             <form class="form-horizontal">
                 <div class="form-group clearfix ">
                     <label class="col-sm-3 control-label bk-lh30 pt0">所属组织：</label>
@@ -205,15 +92,102 @@
                         <textarea class="form-control" rows="3" placeholder="提示信息"></textarea>
                     </div>
                 </div>
-                <div class="form-group clearfix">
-                    <div class="col-sm-9 col-sm-offset-3">
-                        <button type="button" class="king-btn mr10  king-success">保存</button>
-                        <button type="button" class="king-btn king-default ">取消</button>
-                    </div>
-                </div>
+
             </form>
         </div>
     </div>
-</body>
-</%block>
+</body>`,
+                okValue: '确定',
+                ok: function() {
+                    // do something
+                },
+                cancelValue: '取消',
+                cancel: function() {
+                    // do something
+                }
+            });
+            d.showModal();
+        });
 
+        //表格(DataTables)-1，html数据源
+        var language = {
+            search: '搜索：',
+            lengthMenu: "每页显示 _MENU_ 记录",
+            zeroRecords: "没找到相应的数据！",
+            info: "分页 _PAGE_ / _PAGES_",
+            infoEmpty: "暂无数据！",
+            infoFiltered: "(从 _MAX_ 条数据中搜索)",
+            paginate: {
+                first: '首页',
+                last: '尾页',
+                previous: '上一页',
+                next: '下一页',
+            }
+        }
+
+
+        $('#organizations_table').dataTable({
+            autoWidth: true, // 自动宽度
+            paging: true, //分页
+            ordering: false, //关闭排序
+            info: false, //隐藏左下角分页信息
+            searching: false, //关闭搜索
+            pageLength : 10, //每页显示几条数据
+            lengthChange: false, //不允许用户改变表格每页显示的记录数
+            language: language, //汉化
+            // clickToSelect: true, //是否启用点击选中行
+            serverSide: true, // 服务器分页
+            ajax:{
+                "type": 'POST' ,
+                "url": '${api_organizations}',
+
+            },
+
+            columns: [{
+                'data': null,
+                'title': '序号',
+                'render': function(data,type,row,meta) {
+                    return meta.row + 1 + meta.settings._iDisplayStart;
+                }
+            }, {
+                'data': 'key',
+                'title': 'key',
+                'visible': false
+            },{
+                'data': 'organization__name',
+                'title': '所属组织',
+            },{
+                'data': 'reviewer',
+                'title': '负责人',
+            },{
+                'data': 'applicant',
+                'title': '参评人员',
+            },{
+                'data': 'manager',
+                'title': '更新人',
+            },{
+                'data': 'created_time',
+                'title': '创建时间',
+            },
+                {
+                'data': null,
+                'title': '操作',
+                'className': 'text-center whiteSpace',
+                'render':  function(data,type,row,meta) {
+                    var content = `<div class="">
+                                    <a class="king-btn-demo king-btn king-btn-icon king-round king-danger" title="删除" href="${api_delete_organizations}?organizations__key=`+data.key+`">
+                                        <i class="fa fa-close btn-icon"></i>
+                                    </a>
+                                </div>`
+                    return content;
+                }
+            }],
+        });
+
+
+
+        console.log()
+        // 点击查询按钮
+
+    </script>
+</%block>

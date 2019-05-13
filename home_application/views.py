@@ -85,7 +85,7 @@ def awards(request):
 
 
 @require_http_methods('GET')
-@require_superuser
+#@require_superuser
 def add_award(request):
     """添加奖项页面"""
 
@@ -182,8 +182,12 @@ def show_award(request):
 def organizations(request):
     """组织管理页面"""
     router = get_url_list(['manage', 'manage_organizations'])
+    api_organizations_ = reverse('api_organizations')
+    api_delete_organizations_ = reverse('api_delete_organizations')
     data = {
-        'router': router
+        'router': router,
+        'api_delete_organizations': api_delete_organizations_,
+        'api_organizations': api_organizations_,
     }
     return render_mako_context(request, '/home_application/manage_organizations.html', data)
 
@@ -205,11 +209,20 @@ def awards_review(request):
 
     return render_mako_context(request, '/home_application/awards_review.html')
 
-@require_http_methods('GET')
-def clone(request):
-    """我的审核页面"""
+@require_http_methods('POST')
+@require_superuser
+# @require_int_GET('start')
+# @require_int_GET('length')
+# @require_datetime_GET('datetime')
+def api_all_organizations(request):
 
-    return render_mako_context(request, '/home_application/clone.html')
+    draw = int(request.POST.get('draw'))
+    page = int(request.POST.get('start', 1))+1
+    page_size = int(request.POST.get('length', 10))
+    organizations_ = Organization.objects.all(page=page, page_size=page_size)
+    organizations_['draw'] = draw
+    print organizations_
+    return JsonResponse(organizations_)
 
 
 @require_http_methods('POST')
@@ -244,7 +257,7 @@ def api_all_awards(request):
     return JsonResponse(awards)
 
 @require_http_methods('POST')
-@require_superuser
+#@require_superuser
 def api_add_award(request):
     """api 增加award"""
     print request.POST
@@ -312,3 +325,11 @@ def api_change_award(request):
 def api_delete_award(request):
     """api 删除award"""
     return HttpResponse('OK')
+
+@require_http_methods('POST')
+@require_superuser
+def api_delete_organizations(request):
+    """api 删除organizations"""
+    return HttpResponse('OK')
+
+

@@ -108,18 +108,22 @@ class OrganizationManager(models.Manager):
         orgs = super(models.Manager, self).filter(is_deleted=False)
         response = {}
         paginator = Paginator(orgs, page_size)
-        response['total'] = paginator.count
+        response['recordsTotal'] = paginator.count
+        response['recordsFiltered'] = paginator.count
         try:
-            orgs = paginator.page(page)
+            orgs = paginator.page(page).object_list
         except PageNotAnInteger:
-            orgs = paginator.page(1)
+            orgs = paginator.page(1).object_list
         except EmptyPage:
-            orgs = paginator.page(paginator.num_pages)
+            orgs = paginator.page(paginator.num_pages).object_list
+        except ZeroDivisionError:
+            response['organizations'] = []
+            return response
         # 格式化数据
-        data = orgs.values('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
+        data = orgs.values('key', 'organization__name', 'reviewer', 'applicant', 'manager', 'created_time')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
-        response['organizations'] = data
+        response['data'] = data
         return response
 
     def all_name_key(self):
