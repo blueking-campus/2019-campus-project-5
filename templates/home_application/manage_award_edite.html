@@ -3,7 +3,7 @@
 <%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
-	<title>新增奖项</title>
+	<title>奖项</title>
     <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
     <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
     ${parent.head()}
@@ -322,8 +322,8 @@
             var level__name = "${level__name}";
 
 
-            // 反转义字符串
-            requirement = decodeURIComponent(requirement);
+            // 反转义字符串 decodeURIComponent
+            requirement = unescape(requirement);
             editor.value(requirement);
             if (is_active == "True") {
                 $('input:radio[name="is_active"]:first').attr('checked', 'true');
