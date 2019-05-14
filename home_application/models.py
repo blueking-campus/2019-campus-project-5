@@ -117,10 +117,10 @@ class OrganizationManager(models.Manager):
         except EmptyPage:
             orgs = paginator.page(paginator.num_pages).object_list
         except ZeroDivisionError:
-            response['organizations'] = []
+            response['data'] = []
             return response
         # 格式化数据
-        data = orgs.values('key', 'organization__name', 'reviewer', 'applicant', 'manager', 'created_time')
+        data = orgs.values('key', 'name', 'reviewer', 'applicant', 'manager', 'created_time')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
         response['data'] = data
@@ -246,7 +246,7 @@ class AwardManager(models.Manager):
         except ObjectDoesNotExist, err:
             print 'AwardManager:all_by_username: get qq by username:', err
             return []
-        awards = super(models.Manager, self).filter(is_deleted=False)
+        awards = super(models.Manager, self).filter(is_deleted=False, organization__applicant__contains=qq)
         if is_active:
             now = datetime.datetime.now()
             awards = awards.filter(begin_time__lte=now, end_time__gte=now, is_active=is_active)

@@ -225,39 +225,29 @@ def api_all_organizations(request):
     return JsonResponse(organizations_)
 
 
-@require_http_methods('POST')
+@require_http_methods('GET')
 @require_superuser
-# @require_int_GET('start')
-# @require_int_GET('length')
-# @require_datetime_GET('datetime')
 def api_all_awards(request):
-    print request.POST
-    print request.POST.getlist('order')
-    print request.POST.getlist('columns')
-    print request.POST.get('search')
-    print request.POST.get('start')
-    print request.POST.get('length')
-    print request.POST.get('draw')
-
-    draw = int(request.POST.get('draw'))
-    page = int(request.POST.get('start', 1))+1
-    page_size = int(request.POST.get('length', 10))
-    name = request.POST.get('name', '')
-    organization = request.POST.get('organization', '')
+    """api 查询所有奖项"""
+    draw = int(request.GET.get('draw'))
+    page = int(request.GET.get('start', 1))+1
+    page_size = int(request.GET.get('length', 10))
+    name = request.GET.get('name', '')
+    organization = request.GET.get('organization', '')
     try:
-        status = int(request.POST.get('status', 0))
+        status = int(request.GET.get('status', 0))
     except ValueError, err:
         print err
         status = 0
     print status
-    datetime = request.POST.get('datetime', '').replace('&nbsp;', ' ')
+    datetime = request.GET.get('datetime', '').replace('&nbsp;', ' ')
 
     awards_ = Award.objects.all(page=page, page_size=page_size, date_time=datetime, name=name, organization=organization, status=status)
     awards_['draw'] = draw
     return JsonResponse(awards_)
 
 @require_http_methods('POST')
-#@require_superuser
+@require_superuser
 def api_add_award(request):
     """api 增加award"""
     print request.POST
