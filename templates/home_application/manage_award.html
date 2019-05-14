@@ -1,299 +1,295 @@
 <%inherit file="/base.html"/>
-<%namespace name="navbar" file="/home_application/manage_nav.html"/>
 <%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
 	<title>奖项管理</title>
-    <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
-    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
     ${parent.head()}
 
     <!--datetimepicker-->
     <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
-
 
     <!--datatables-->
     <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.css" rel="stylesheet"/>
-    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/jquery.dataTables.js"></script>
-    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.js"></script>
 
      <!--模态对话框-->
     <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/css/ui-dialog.css" rel="stylesheet">
-    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/dist/dialog-min.js"></script>
 
-    <!-- 按钮图标 -->
-    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/fontawesome/css/font-awesome.min.css" rel="stylesheet">
 </%block>
 
 <%block name="content">
     ${topbar.topbar()}
-    <div class="king-page-box king-layout1-main clearfix mt30">
-        <!-- 左边 start -->
-        ${navbar.navbar()}
-        <!-- 左边 end -->
-        <!-- content start -->
-        <div class="king-content-wrap">
-            <div class="king-layout1-content" style="margin-left: 216px;">
-                <!-- 面板 编辑 开始 -->
-                <div class="panel king-panel1 ml10 ">
-                    <div class="panel-heading king-panel-head1 king-panel-top1">
-                        <h3 class="panel-title">奖项</h3>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">奖项列表</div>
+        <div class="panel-body">
+            <!--内联表单 开始-->
+            <div id="toolbar">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="award">申请奖项：</label>
+                        <input type="text" class="form-control" id="award" placeholder="输入奖项名">
+                        <input type="hidden" id="award_value">
                     </div>
-                    <div class="panel-body">
-                        <!--内联表单 开始-->
-
-                        <div id="toolbar">
-                            <form class="form-inline mt10 mb5">
-                                <div class="form-group">
-                                    <label for="award">申请奖项：</label>
-                                    <input type="text" class="form-control" id="award" placeholder="输入奖项名">
-                                    <input type="hidden" id="award_value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="organization">所属组织：</label>
-                                    <input type="text" class="form-control" id="organization" placeholder="输入组织名">
-                                    <input type="hidden" id="organization_value">
-                                </div>
-                                <div class="form-group">
-                                    <label class="">状态：</label>
-                                    <select name="" id="status" class="form-control">
-                                        <option value="0">不限</option>
-                                        <option value="1">已过期</option>
-                                        <option value="2">有效</option>
-                                    </select>
-                                    <input type="hidden" id="status_value">
-                                </div>
-                                <div class="input-group date" data-date="" id="datetimepicker" data-date-format="dd MM yyyy HH MM SS" data-link-field="datetime_value" data-link-format="yyyy-mm-dd hh:ii:ss">
-                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                    <!--<label for="datetimepicker">申报时间：</label>-->
-                                    <input class="form-control" size="16" type="text" value="" placeholder="申报时间" id="datetime">
-                                    <input type="hidden" id="datetime_value">
-                                    <br>
-                                </div>
-                                <button type="button" class="king-btn king-info" id="search">查询</button>
-                                <button type="button" class="king-btn king-info" id="clones">批量克隆</button>
-                                <a class="king-btn king-info" href="/manage/awards/add/">新增</a>
-                            </form>
-                        </div>
-                        <!--内联表单 结束-->
-                        <table id="awards_table" class="table table-bordered table-hover dataTable no-footer" role="grid"></table>
+                    <div class="form-group">
+                        <label for="organization">所属组织：</label>
+                        <input type="text" class="form-control" id="organization" placeholder="输入组织名">
+                        <input type="hidden" id="organization_value">
                     </div>
-                </div>
-                <!-- 面板 编辑 结束 -->
+                    <div class="form-group">
+                        <label class="">状态：</label>
+                        <select name="" id="status" class="form-control">
+                            <option value="0">不限</option>
+                            <option value="1">已过期</option>
+                            <option value="2">有效</option>
+                        </select>
+                        <input type="hidden" id="status_value">
+                    </div>
+                    <div class="input-group date" data-date="" id="datetimepicker" data-date-format="dd MM yyyy HH MM SS" data-link-field="datetime_value" data-link-format="yyyy-mm-dd hh:ii:ss">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        <!--<label for="datetimepicker">申报时间：</label>-->
+                        <input class="form-control" size="16" type="text" value="" placeholder="申报时间" id="datetime">
+                        <input type="hidden" id="datetime_value">
+                        <br>
+                    </div>
+                    <button type="button" class="king-btn king-info" id="search">查询</button>
+                    <button type="button" class="king-btn king-info" id="clones">批量克隆</button>
+                    <a class="king-btn king-info" href="/manage/awards/add/">新增</a>
+                </form>
             </div>
+            <!--内联表单 结束-->
         </div>
-        <!-- content end -->
+
+        <!-- Table -->
+        <div class="m10">
+            <table id="awards_table" class="table table-bordered table-hover dataTable no-footer" role="grid"></table>
+        </div>
     </div>
+</%block>
 
-    <script type="text/javascript">
-        //日期选择器(Bootstrap)-2，日期选择
-        $('#datetimepicker').datetimepicker({
-            language:  'zh-TW',
-            weekStart: 1,
-            todayBtn:  true,
-            autoClose: true,
-            todayHighlight: true,
-            startView: 2,
-            minView: 0,
-            forceParse: false,
-            format:"yyyy-mm-dd hh:ii:ss",
-        });
+<!--datetimepicker-->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
 
-        //表格(DataTables)-1，html数据源
-        var language = {
-            search: '搜索：',
-            lengthMenu: "每页显示 _MENU_ 记录",
-            zeroRecords: "没找到相应的数据！",
-            info: "分页 _PAGE_ / _PAGES_",
-            infoEmpty: "暂无数据！",
-            infoFiltered: "(从 _MAX_ 条数据中搜索)",
-            paginate: {
-                first: '首页',
-                last: '尾页',
-                previous: '上一页',
-                next: '下一页',
-            }
+
+<!--datatables-->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/jquery.dataTables.js"></script>
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.js"></script>
+
+ <!--模态对话框-->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/artDialog-6.0.4/dist/dialog-min.js"></script>
+
+<script type="text/javascript">
+    //日期选择器(Bootstrap)-2，日期选择
+    $('#datetimepicker').datetimepicker({
+        language:  'zh-TW',
+        weekStart: 1,
+        todayBtn:  true,
+        autoClose: true,
+        todayHighlight: true,
+        startView: 2,
+        minView: 0,
+        forceParse: false,
+        format:"yyyy-mm-dd hh:ii:ss",
+    });
+
+    //表格(DataTables)-1，html数据源
+    var language = {
+        search: '搜索：',
+        lengthMenu: "每页显示 _MENU_ 记录",
+        zeroRecords: "没找到相应的数据！",
+        info: "分页 _PAGE_ / _PAGES_",
+        infoEmpty: "暂无数据！",
+        infoFiltered: "(从 _MAX_ 条数据中搜索)",
+        paginate: {
+            first: '首页',
+            last: '尾页',
+            previous: '上一页',
+            next: '下一页',
         }
-        $('#awards_table').dataTable({
-            autoWidth: true, // 自动宽度
-            paging: true, //分页
-            ordering: false, //关闭排序
-            info: false, //隐藏左下角分页信息
-            searching: false, //关闭搜索
-            pageLength : 10, //每页显示几条数据
-            lengthChange: false, //不允许用户改变表格每页显示的记录数
-            language: language, //汉化
-            // clickToSelect: true, //是否启用点击选中行
-            serverSide: true, // 服务器分页
-            ajax:{
-                "type": 'GET' ,
-                "url": '${api_awards}',
-                "data": function ( d ) {
-                    return $.extend( {}, d, {
-                        "name": $('#award_value').val(),
-                        "organization": $('#organization_value').val(),
-                        "datetime": $('#datetime_value').val(),
-                        "status": $('#status_value').val(),
-                    });
-                }
-            },
-            columns: [{
-                'data': null,
-                'title': '序号',
-                'render': function(data,type,row,meta) {
-                    return meta.row + 1 + meta.settings._iDisplayStart;
-                }
-            }, {
-                'data': 'key',
-                'title': 'key',
-                'visible': false
-            },{
-                'data': 'organization__name',
-                'title': '所属组织',
-            },{
-                'data': 'level__name',
-                'title': '奖项级别',
-            },{
-                'data': 'name',
-                'title': '奖项名称',
-            },{
-                'data': 'begin_time',
-                'title': '开始时间',
-            },{
-                'data': 'end_time',
-                'title': '结束时间',
-            },{
-                'data': 'apply_number',
-                'title': '申请人数',
-            },{
-                'data': 'awarded_number',
-                'title': '获奖人数',
-            }, {
-                'data': null,
-                'title': '操作',
-                'className': 'text-center whiteSpace',
-                'render':  function(data,type,row,meta) {
-
-                    var content = `<div class="">
-                                    <a class="king-btn-demo king-btn king-btn-icon king-round king-primary" title="查看" href="${manage_show_award}?award__key=`+data.key+`">
-                                        <i class="fa fa-search btn-icon"></i>
-                                    </a>
-                                    <a class="king-btn-demo king-btn king-btn-icon king-round king-info" title="克隆" href="${manage_clone_award}?award__key=`+data.key+`">
-                                        <i class="fa fa-mail-reply-all btn-icon"></i>
-                                    </a>
-                                    <a class="king-btn-demo king-btn king-btn-icon king-round king-warning" title="编辑" href="${manage_change_award}?award__key=` +data.key+`">
-                                        <i class="fa fa-cog btn-icon"></i>
-                                    </a>
-                                    <button class="king-btn-demo king-btn king-btn-icon king-round king-danger" title="删除" onclick='delete_award("`+data.key+`")' name="delete_btn">
-                                        <i class="fa fa-close btn-icon"></i>
-                                    </button>
-                                </div>`
-                    return content;
-                }
-            }],
-
-        });
-
-        //模态对话框
-        $("#clones").click(function() {
-            var d = dialog({
-                width: 460,
-                title: '批量克隆奖项',
-                content: `
-                        <form class="form-inline mt10 mb5">
-                            <div class="m10">
-                                <div class="form-group">
-                                    <label for="award">奖项名称：</label>
-                                    <input type="text" class="form-control" id="award" placeholder="输入奖项名">
-                                    <input type="hidden" id="award_value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="award_new">替换为：</label>
-                                    <input type="text" class="form-control" id="award_new" placeholder="输入奖项名">
-                                    <input type="hidden" id="award_new_value">
-                                </div>
-                            </div>
-                            <div class="m10">
-                                <div class="form-group">
-                                    <label class="">所属组织：</label>
-                                    <select name="" id="" class="form-control">
-                                        <option value="0">不限</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                    </select>
-                                    <input type="hidden" id="status_value">
-                                </div>
-                            </div>
-                            <div class="m10">
-                                <div class="form-group">
-                                    <label for="begin_date">开始时间：</label>
-                                    <input type="text" class="form-control" id="begin_date" placeholder="输入开始时间">
-                                    <input type="hidden" id="begin_date_value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="end_date">结束时间：</label>
-                                    <input type="text" class="form-control" id="end_date" placeholder="输入结束时间">
-                                    <input type="hidden" id="end_date_value">
-                                </div>
-                            </div>
-                        </form>`,
-                okValue: '确定',
-                ok: function() {
-                    // do something
-                },
-                cancelValue: '取消',
-                cancel: function() {
-                    // do something
-                }
-            });
-            d.showModal();
-        });
-
-        console.log()
-        // 点击查询按钮
-        $('#search').click({api: $('#awards_table').DataTable()},function (event){
-
-            $('#award_value').val($('#award').val());
-            $('#organization_value').val($('#organization').val());
-            $('#datetime_value').val($('#datetime').val());
-            $('#status_value').val($('#status').val());
-
-            let table = event.data.api;
-            console.log(table);
-
-            table.ajax.reload();
-        })
-
-        // 删除按钮
-        // $('button[name=delete_btn]').click(function () {
-        //     console.log($(this).val());
-        // })
-        let api = $('#awards_table').DataTable();
-        function delete_award(key) {
-            let res = confirm("确认删除奖项？");
-            if (res){
-                $.ajax({
-                    type: "POST",
-                    url: "${api_delete_award}",
-                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                    data: {'key': [key]},
-                    dataType: "text",
-                    success: function(data){
-                        alert(data);
-                        api.ajax.reload();
-                    },
-                    error: function(e){
-                        if(e.status==302){
-                            location.href = e.responseText
-                        } else {
-                            alert(e.responseText)
-                        }
-                    }
+    }
+    $('#awards_table').dataTable({
+        autoWidth: false, // 自动宽度
+        paging: true, //分页
+        ordering: false, //关闭排序
+        info: false, //隐藏左下角分页信息
+        searching: false, //关闭搜索
+        pageLength : 10, //每页显示几条数据
+        lengthChange: false, //不允许用户改变表格每页显示的记录数
+        language: language, //汉化
+        // clickToSelect: true, //是否启用点击选中行
+        serverSide: true, // 服务器分页
+        ajax:{
+            "type": 'GET' ,
+            "url": '${api_awards}',
+            "data": function ( d ) {
+                return $.extend( {}, d, {
+                    "name": $('#award_value').val(),
+                    "organization": $('#organization_value').val(),
+                    "datetime": $('#datetime_value').val(),
+                    "status": $('#status_value').val(),
                 });
             }
-            console.log(key);
+        },
+        columns: [{
+            'data': null,
+            'title': '序号',
+            'render': function(data,type,row,meta) {
+                return meta.row + 1 + meta.settings._iDisplayStart;
+            }
+        }, {
+            'data': 'key',
+            'title': 'key',
+            'visible': false
+        },{
+            'data': 'organization__name',
+            'title': '所属组织',
+        },{
+            'data': 'level__name',
+            'title': '奖项级别',
+        },{
+            'data': 'name',
+            'title': '奖项名称',
+        },{
+            'data': 'begin_time',
+            'title': '开始时间',
+        },{
+            'data': 'end_time',
+            'title': '结束时间',
+        },{
+            'data': 'apply_number',
+            'title': '申请人数',
+        },{
+            'data': 'awarded_number',
+            'title': '获奖人数',
+        }, {
+            'data': null,
+            'title': '操作',
+            'className': 'text-center whiteSpace',
+            'render':  function(data,type,row,meta) {
+
+                // var content = `<div class="">
+                //                 <a class="king-btn-demo king-btn king-btn-icon king-round king-primary" title="查看" href="${manage_show_award}?award__key=`+data.key+`">
+                //                     <i class="fa fa-search btn-icon"></i>
+                //                 </a>
+                //                 <a class="king-btn-demo king-btn king-btn-icon king-round king-info" title="克隆" href="${manage_clone_award}?award__key=`+data.key+`">
+                //                     <i class="fa fa-mail-reply-all btn-icon"></i>
+                //                 </a>
+                //                 <a class="king-btn-demo king-btn king-btn-icon king-round king-warning" title="编辑" href="${manage_change_award}?award__key=` +data.key+`">
+                //                     <i class="fa fa-cog btn-icon"></i>
+                //                 </a>
+                //                 <button class="king-btn-demo king-btn king-btn-icon king-round king-danger" title="删除" onclick='delete_award("`+data.key+`")' name="delete_btn">
+                //                     <i class="fa fa-close btn-icon"></i>
+                //                 </button>
+                //             </div>`
+                var content = `<div class="">
+                                <a class="btn btn-success btn-xs" title="查看" href="${manage_show_award}?award__key=`+data.key+`"><i class=" fa fa-check"></i></a>
+                                <a class="btn btn-primary btn-xs" title="克隆" href="${manage_clone_award}?award__key=`+data.key+`"><i class="fa fa-mail-reply-all" ></i></a>
+                                <a class="btn btn-warning btn-xs" title="编辑" href="${manage_change_award}?award__key=` +data.key+`"><i class="fa fa-cog "></i></a>
+                                <button class="btn btn-danger btn-xs" title="删除" onclick='delete_award("`+data.key+`")' name="delete_btn"><i class="fa fa-trash-o "></i></button>
+                            </div>`;
+                return content;
+            }
+        }],
+
+    });
+
+    //模态对话框
+    $("#clones").click(function() {
+        var d = dialog({
+            width: 460,
+            title: '批量克隆奖项',
+            content: `
+                    <form class="form-inline mt10 mb5">
+                        <div class="m10">
+                            <div class="form-group">
+                                <label for="award">奖项名称：</label>
+                                <input type="text" class="form-control" id="award" placeholder="输入奖项名">
+                                <input type="hidden" id="award_value">
+                            </div>
+                            <div class="form-group">
+                                <label for="award_new">替换为：</label>
+                                <input type="text" class="form-control" id="award_new" placeholder="输入奖项名">
+                                <input type="hidden" id="award_new_value">
+                            </div>
+                        </div>
+                        <div class="m10">
+                            <div class="form-group">
+                                <label class="">所属组织：</label>
+                                <select name="" id="" class="form-control">
+                                    <option value="0">不限</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                                <input type="hidden" id="status_value">
+                            </div>
+                        </div>
+                        <div class="m10">
+                            <div class="form-group">
+                                <label for="begin_date">开始时间：</label>
+                                <input type="text" class="form-control" id="begin_date" placeholder="输入开始时间">
+                                <input type="hidden" id="begin_date_value">
+                            </div>
+                            <div class="form-group">
+                                <label for="end_date">结束时间：</label>
+                                <input type="text" class="form-control" id="end_date" placeholder="输入结束时间">
+                                <input type="hidden" id="end_date_value">
+                            </div>
+                        </div>
+                    </form>`,
+            okValue: '确定',
+            ok: function() {
+                // do something
+            },
+            cancelValue: '取消',
+            cancel: function() {
+                // do something
+            }
+        });
+        d.showModal();
+    });
+
+    console.log()
+    // 点击查询按钮
+    $('#search').click({api: $('#awards_table').DataTable()},function (event){
+
+        $('#award_value').val($('#award').val());
+        $('#organization_value').val($('#organization').val());
+        $('#datetime_value').val($('#datetime').val());
+        $('#status_value').val($('#status').val());
+
+        let table = event.data.api;
+        console.log(table);
+
+        table.ajax.reload();
+    })
+
+    // 删除按钮
+    // $('button[name=delete_btn]').click(function () {
+    //     console.log($(this).val());
+    // })
+    let api = $('#awards_table').DataTable();
+    function delete_award(key) {
+        let res = confirm("确认删除奖项？");
+        if (res){
+            $.ajax({
+                type: "POST",
+                url: "${api_delete_award}",
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {'key': [key]},
+                dataType: "text",
+                success: function(data){
+                    alert(data);
+                    api.ajax.reload();
+                },
+                error: function(e){
+                    if(e.status==302){
+                        location.href = e.responseText
+                    } else {
+                        alert(e.responseText)
+                    }
+                }
+            });
         }
-    </script>
-</%block>
+        console.log(key);
+    }
+</script>

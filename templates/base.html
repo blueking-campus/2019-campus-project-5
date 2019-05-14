@@ -2,93 +2,157 @@
 <html>
 <head>
     <%block name='head'>
+        <!--<meta charset="utf-8">-->
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>${APP_CODE}</title>
-        <meta name="description" content=""/>
-        <meta name="author" content=""/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="Dashboard">
+        <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+        <title>Dashio - Bootstrap Admin Template</title>
+
         <!-- bootstrap css -->
         <link href="${REMOTE_STATIC_URL}v3/assets/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
-        <!-- 禁止bootstrap 响应式 （app根据自身需求启用或禁止bootstrap响应式） -->
-        <link href="${REMOTE_STATIC_URL}v3/assets/bootstrap-3.3.4/css/bootstrap_noresponsive.css" rel="stylesheet">
+
         <!-- kendoUI css -->
         <link href="${REMOTE_STATIC_URL}v3/assets/kendoui-2015.2.624/styles/kendo.common.min.css" rel="stylesheet">
         <link href="${REMOTE_STATIC_URL}v3/assets/kendoui-2015.2.624/styles/kendo.metro.min.css" rel="stylesheet">
         <!-- 平台cs     -->
         <link href="${REMOTE_STATIC_URL}v3/bk/css/bk.css" rel="stylesheet">
-        <!-- jquery js  -->
-        <script src="${REMOTE_STATIC_URL}v3/assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-        <script src="${REMOTE_STATIC_URL}jquery/jquery.json-2.3.min.js"></script>
-        <!--跨域js-->
-        <script src="http://o.qcloud.com/static_api/csrftoken_v3.js"></script>
 
-        <style>
-            /*如果你需要给你的应用固定高度和宽度，请在这里修改*/
-            body {min-width:1202px;}
-            .container{
-                width:auto;
-                min-width: 1200px;
-                max-width:1400px;
-            }
-        </style>
+        <!-- 按钮图标 -->
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+
+        <!--external css-->
+        <!-- 日期<link rel="stylesheet" type="text/css" href="css/zabuto_calendar.css">-->
+        <!--<link rel="stylesheet" type="text/css" href="lib/gritter/css/jquery.gritter.css" />-->
+
+        <!-- Custom styles for this template -->
+        <link href="/static/css/style.css" rel="stylesheet">
+        <link href="/static/css/style-responsive.css" rel="stylesheet">
+
     </%block>
+    <!-- =======================================================
+      Template Name: Dashio
+      Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
+      Author: TemplateMag.com
+      License: https://templatemag.com/license/
+    ======================================================= -->
 </head>
+
 <body>
-    <div>
-        <!--顶部导航 Start-->
-        <nav class="navbar navbar-default king-horizontal-nav1" role="navigation">
-            <div class="container" style="width: 100%;">
-                <div class="navbar-header col-md-4 col-sm-4 col-xs-4">
-                    <a class="navbar-brand" href="${SITE_URL}" style="display: flex; align-items: center">
-                        <span style="color: white;margin-right: 10px;">奖项申报</span>
-                        <img src="https://o.qcloud.com/static_api/v3/bk/images/logo.png" class="">
-                    </a>
-                </div>
-                <div class="collapse navbar-collapse navbar-responsive-collapse" id="king-example-navbar-collapse-2">
-                    <ul class="nav navbar-nav">
-                        <%
-                            home = apply = manage = personal = ''
-                            relative_path = APP_PATH
-                            if relative_path == SITE_URL or relative_path.startswith(SITE_URL + "?"):
-                                home = 'king-navbar-active active'
-                            elif relative_path.startswith(SITE_URL + "apply/"):
-                                apply = 'king-navbar-active active'
-                            elif relative_path.startswith(SITE_URL + "manage/"):
-                                manage = 'king-navbar-active active'
-                            elif relative_path.startswith(SITE_URL + "personal/"):
-                                personal = 'king-navbar-active active'
-                        %>
-                        <!--<li class="${home}"><a href="${SITE_URL}"><span style="color: white;">首页</span></a></li>-->
-                        <li class="${apply}"><a href="${SITE_URL}"><span style="color: white;">奖项申报</span></a></li>
-                        % if user.is_superuser:
-                        <li class="${manage}"><a href="${SITE_URL}manage/organizations/"><span style="color: white;">系统管理</span></a></li>
-                        % endif
-                        <li class="${personal}"><a href="${SITE_URL}personal/apply/"><span style="color: white;">个人中心</span></a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <a href="###" style="color: #898989;font-size:14px;line-height: 48px;padding: 0 15px;">
-                            <img src="${AVATAR}"  onerror="javascript:this.src='${STATIC_URL}images/getheadimg.jpg';" width="40" alt="Avatar" style="border-radius:50%;margin-right:10px;">
-                            <span style="color: white;">${NICK}</span>
-                        </a>
-                        <!--     退出登录，正式环境下该方法无效             -->
-                        % if RUN_MODE != 'PRODUCT':
-                            <a id="logout" href="###" onclick="bk_app.logout('${LOGOUT_URL}')">退出</a>
-                        % endif
-                    </ul>
-                </div>
+    <section id="container">
+        <!-- **********************************************************************************************************************************************************
+            TOP BAR CONTENT & NOTIFICATIONS
+            *********************************************************************************************************************************************************** -->
+        <!--header start-->
+        <header class="header black-bg">
+            <div class="sidebar-toggle-box">
+                <div class="fa fa-bars tooltips" data-placement="right" data-original-title="导航栏"></div>
             </div>
-        </nav>
-        <!--顶部导航 End-->
-    </div>
-    <!-- 固定宽度居中 start -->
-    <div class="container">
-        <div class="">
-            <%block name='content'></%block>
-        </div>
-    </div>
-    <!-- 固定宽度表单居中 end -->
+            <!--logo start-->
+            <a href="#" class="logo"><b>奖项申请<span>BlueKing</span></b></a>
+            <!--logo end-->
+            <div class="nav notify-row" id="top_menu">
+
+            </div>
+            <div class="top-menu">
+                % if RUN_MODE != 'PRODUCT':
+                    <ul class="nav pull-right top-menu">
+                        <li><a id="logout" class="logout" href="###" onclick="bk_app.logout('${LOGOUT_URL}')">退出</li>
+                    </ul>
+                % endif
+                <!--<ul class="nav pull-right top-menu">-->
+                    <!--<li><a class="logout" href="login.html">退出登录</a></li>-->
+                <!--</ul>-->
+            </div>
+        </header>
+        <!--header end-->
+        <!-- **********************************************************************************************************************************************************
+            MAIN SIDEBAR MENU
+            *********************************************************************************************************************************************************** -->
+        <!--sidebar start-->
+        <%
+            home = manage = manage_award = manage_organization = personal = personal_apply = personal_review =  ''
+            relative_path = APP_PATH
+            if relative_path == SITE_URL or relative_path.startswith(SITE_URL + "?"):
+                home = 'active'
+            elif relative_path.startswith(SITE_URL + "manage/"):
+                manage = 'active'
+            elif relative_path.startswith(SITE_URL + "personal/"):
+                personal = 'active'
+
+            if relative_path.startswith(SITE_URL + "manage/awards/"):
+                manage_award = 'active'
+            elif relative_path.startswith(SITE_URL + "manage/organizations/"):
+                manage_organization = 'active'
+            elif relative_path.startswith(SITE_URL + "personal/apply/"):
+                personal_apply = 'active'
+            elif relative_path.startswith(SITE_URL + "personal/review/"):
+                personal_review = 'active'
+        %>
+        <aside>
+            <div id="sidebar" class="nav-collapse ">
+                <!-- sidebar menu start-->
+                <ul class="sidebar-menu" id="nav-accordion">
+                    <p class="centered">
+                        <a href="#">
+                            <img src="${AVATAR}" class="img-circle" width="80">
+                                 <!--onerror="javascript:this.src='${STATIC_URL}images/getheadimg.jpg';"-->
+                        </a>
+                    </p>
+                    <h5 class="centered">${NICK}</h5>
+                    <li class="mt">
+                        <a class="${home}" href="/">
+                            <i class="fa fa-home"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+                    <li class="sub-menu">
+                        <a href="javascript:;" class="${manage}">
+                            <i class="fa fa-cogs"></i>
+                            <span>系统管理</span>
+                        </a>
+                        <ul class="sub">
+                            <li class="${manage_organization}"><a href="/manage/organizations/">组织管理</a></li>
+                            <li class="${manage_award}"><a href="/manage/awards/">奖项管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="sub-menu">
+                        <a href="javascript:;" class="${personal}">
+                            <i class="fa fa-meh-o"></i>
+                            <span>个人管理</span>
+                        </a>
+                        <ul class="sub">
+                            <li class="${personal_apply}"><a href="#" >我的申报</a></li>
+                            <li class="${personal_review}"><a href="#" >我的审核</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- sidebar menu end-->
+            </div>
+        </aside>
+        <!--sidebar end-->
+        <!-- **********************************************************************************************************************************************************
+            MAIN CONTENT
+            *********************************************************************************************************************************************************** -->
+        <!--main content start-->
+        <section id="main-content">
+            <section class="wrapper">
+                <%block name='content'></%block>
+            </section>
+        </section>
+        <!--main content end-->
+    </section>
+
 </body>
 <%block name="base_js">
 
+
+<!-- jquery js  -->
+<script src="${REMOTE_STATIC_URL}v3/assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="${REMOTE_STATIC_URL}jquery/jquery.json-2.3.min.js"></script>
+<!--跨域js-->
+<script src="http://o.qcloud.com/static_api/csrftoken_v3.js"></script>
 <!-- 处理jquery兼容问题，jQuery Migrate（迁移）插件包含了1.6.4以来存在但1.9已不支持所有API -->
 <script src="${REMOTE_STATIC_URL}v3/assets/js/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
     <!-- bootstrap js  -->
@@ -101,6 +165,17 @@
 <script src="${STATIC_URL}js/settings.js?v=${STATIC_VERSION}"></script>
 <!--统计js  勿删-->
 <script src="${REMOTE_STATIC_URL}analysis.js"></script>
+
+
+<script class="include" type="text/javascript" src="/static/lib/jquery.dcjqaccordion.2.7.js"></script>
+<script src="/static/lib/jquery.scrollTo.min.js"></script>
+<script src="/static/lib/jquery.nicescroll.js" type="text/javascript"></script>
+<!--<script src="/static/lib/jquery.sparkline.js"></script>-->
+<!--common script for all pages-->
+<script src="/static/lib/common-scripts.js"></script>
+<!--<script type="text/javascript" src="/static/lib/gritter/js/jquery.gritter.js"></script>-->
+<!--<script type="text/javascript" src="/static/lib/gritter-conf.js"></script>-->
+
 <!-- 这个是全局配置，如果需要在js中使用app_code和site_url,则这个javascript片段一定要保留 -->
 <script type="text/javascript">
     var app_code = "${APP_CODE}";            // 在蓝鲸系统里面注册的"应用编码"
