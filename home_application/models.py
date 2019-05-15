@@ -10,6 +10,8 @@ from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
+from account.models import BkUser
+
 from home_application.utils import (
     DateJSONEncoder, generateUUID
 )
@@ -461,6 +463,7 @@ class Application(models.Model):
     )
     # 获取状态码对应的字符串的方法： Model.get_FOO_display(), (FOO: 字段名字)
     status = models.IntegerField(verbose_name=u'申请状态', choices=STATUS_CHOICES)
+    user = models.ForeignKey(to=BkUser, verbose_name=u'申请用户')
     award = models.ForeignKey(to=Award, verbose_name=u'奖项', on_delete=models.CASCADE)
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
