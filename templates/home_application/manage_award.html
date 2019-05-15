@@ -56,7 +56,10 @@
                     <a class="btn btn-theme btn-sm" href="/manage/awards/add/">&nbsp;&nbsp;新增&nbsp;&nbsp;</a>
                 </form>
             </div>
-            <!--内联表单 结束-->
+            <!-- 内联表单 结束 -->
+            <!-- 克隆模块 开始 -->
+
+            <!-- 克隆模块 结束 -->
         </div>
 
         <!-- Table -->
@@ -183,7 +186,7 @@
                 //             </div>`
                 var content = `<div class="">
                                 <a class="btn btn-success btn-xs" title="查看" href="${manage_show_award}?award__key=`+data.key+`"><i class=" fa fa-search"></i></a>
-                                <a class="btn btn-primary btn-xs" title="克隆" href="${manage_clone_award}?award__key=`+data.key+`"><i class="fa fa-mail-reply-all" ></i></a>
+                                <button class="btn btn-primary btn-xs" title="克隆" onclick='clone_award("`+data.key+`","`+data.name+`")'><i class="fa fa-mail-reply-all" ></i></button>
                                 <a class="btn btn-warning btn-xs" title="编辑" href="${manage_change_award}?award__key=` +data.key+`"><i class="fa fa-cog "></i></a>
                                 <button class="btn btn-danger btn-xs" title="删除" onclick='delete_award("`+data.key+`")' name="delete_btn"><i class="fa fa-trash-o "></i></button>
                             </div>`;
@@ -194,57 +197,60 @@
     });
 
     //模态对话框
-    $("#clones").click(function() {
-        var d = dialog({
-            width: 460,
-            title: '批量克隆奖项',
-            content: `
-                    <form class="form-inline mt10 mb5">
-                        <div class="m10">
-                            <div class="form-group">
-                                <label for="award">奖项名称：</label>
-                                <input type="text" class="form-control" id="award" placeholder="输入奖项名">
-                                <input type="hidden" id="award_value">
-                            </div>
-                            <div class="form-group">
-                                <label for="award_new">替换为：</label>
-                                <input type="text" class="form-control" id="award_new" placeholder="输入奖项名">
-                                <input type="hidden" id="award_new_value">
-                            </div>
+    let dia = dialog({
+        width: 460,
+        title: '批量克隆奖项',
+        content: `
+                <form class="form-inline mt10 mb5">
+                    <div class="m10">
+                        <div class="form-group">
+                            <label for="award">奖项名称：</label>
+                            <input type="text" class="form-control" id="award" placeholder="输入奖项名">
+                            <input type="hidden" id="award_value">
                         </div>
-                        <div class="m10">
-                            <div class="form-group">
-                                <label class="">所属组织：</label>
-                                <select name="" id="" class="form-control">
-                                    <option value="0">不限</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                </select>
-                                <input type="hidden" id="status_value">
-                            </div>
+                        <div class="form-group">
+                            <label for="award_new">替换为：</label>
+                            <input type="text" class="form-control" id="award_new" placeholder="输入奖项名">
+                            <input type="hidden" id="award_new_value">
                         </div>
-                        <div class="m10">
-                            <div class="form-group">
-                                <label for="begin_date">开始时间：</label>
-                                <input type="text" class="form-control" id="begin_date" placeholder="输入开始时间">
-                                <input type="hidden" id="begin_date_value">
-                            </div>
-                            <div class="form-group">
-                                <label for="end_date">结束时间：</label>
-                                <input type="text" class="form-control" id="end_date" placeholder="输入结束时间">
-                                <input type="hidden" id="end_date_value">
-                            </div>
+                    </div>
+                    <div class="m10">
+                        <div class="form-group">
+                            <label class="">所属组织：</label>
+                            <select name="" id="" class="form-control">
+                                <option value="0">不限</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                            <input type="hidden" id="status_value">
                         </div>
-                    </form>`,
-            okValue: '确定',
-            ok: function() {
-                // do something
-            },
-            cancelValue: '取消',
-            cancel: function() {
-                // do something
-            }
-        });
+                    </div>
+                    <div class="m10">
+                        <div class="form-group">
+                            <label for="begin_date">开始时间：</label>
+                            <input type="text" class="form-control" id="begin_date" placeholder="输入开始时间">
+                            <input type="hidden" id="begin_date_value">
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">结束时间：</label>
+                            <input type="text" class="form-control" id="end_date" placeholder="输入结束时间">
+                            <input type="hidden" id="end_date_value">
+                        </div>
+                    </div>
+                </form>`,
+        okValue: '确定',
+        ok: function() {
+            // do something
+        },
+        cancelValue: '取消',
+        cancel: function() {
+            // do something
+        }
+    });
+
+    // 打开模态对话框
+    $("#clones").click({dialog: dia},function(e) {
+        let d = e.data.dialog;
         d.showModal();
     });
 
@@ -264,9 +270,6 @@
     })
 
     // 删除按钮
-    // $('button[name=delete_btn]').click(function () {
-    //     console.log($(this).val());
-    // })
     let api = $('#awards_table').DataTable();
     function delete_award(key) {
         let res = confirm("确认删除奖项？");
@@ -291,5 +294,11 @@
             });
         }
         console.log(key);
+    }
+
+    // 克隆奖项
+    function clone_award (key, name) {
+        console.log('key',key);
+        console.log('name',name);
     }
 </script>

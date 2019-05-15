@@ -15,6 +15,8 @@ from account.models import BkUser
 from home_application.utils import (
     DateJSONEncoder, generateUUID
 )
+
+
 class UserManager(models.Manager):
     """用户管理"""
     def username_exist(self, username):

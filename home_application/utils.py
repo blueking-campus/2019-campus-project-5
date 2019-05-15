@@ -9,6 +9,60 @@ from django.core.urlresolvers import reverse
 # from home_application.urls_settings import urls
 
 
+class UrlSetting(object):
+    def __init__(self):
+        # url配置
+        self.urls = {
+            'home': {
+                'url': reverse('home'),
+                'title': u'首页'
+            },
+            'manage': {
+                'url': '#',
+                'title': u'系统管理'
+            },
+            'manage_awards': {
+                'url': reverse('manage_awards'),
+                'title': u'奖项管理'
+            },
+            'manage_organizations': {
+                'url': reverse('manage_organizations'),
+                'title': u'组织管理'
+            },
+            'manage_add_award': {
+                'url': reverse('manage_add_award'),
+                'title': u'添加奖项'
+            },
+            'manage_show_award': {
+                'url': reverse('manage_show_award'),
+                'title': u'奖项详情'
+            },
+            'manage_change_award': {
+                'url': reverse('manage_change_award'),
+                'title': u'修改奖项'
+            },
+            'personal': {
+                'url': '#',
+                'title': u'个人管理'
+            },
+            'personal_apply': {
+                'url': reverse('personal_apply'),
+                'title': u'我的申报'
+            },
+            'personal_review': {
+                'url': reverse('personal_review'),
+                'title': u'我的审核'
+            },
+        }
+
+
+    def get_setting(self):
+        """获取配置"""
+        return self.urls
+
+
+
+
 class DateJSONEncoder(json.JSONEncoder):
     """date-json编码"""
 
@@ -62,37 +116,9 @@ def get_url_list(name_lsit):
     获取url_list
     name_list's item: string:url_name or dirc:{'url_name': string, 'kwargs':dirc }
     """
-    urls = {
-        'home': {
-            'url': reverse('home'),
-            'title': u'首页'
-        },
-        'manage': {
-            'url': '#',
-            'title': u'系统管理'
-        },
-        'manage_awards': {
-            'url': reverse('manage_awards'),
-            'title': u'奖项管理'
-        },
-        'manage_organizations': {
-            'url': reverse('manage_organizations'),
-            'title': u'组织管理'
-        },
-        'manage_add_award': {
-            'url': reverse('manage_add_award'),
-            'title': u'添加奖项'
-        },
-        'manage_show_award': {
-            'url': reverse('manage_show_award'),
-            'title': u'奖项详情'
-        },
-        'manage_change_award': {
-            'url': reverse('manage_change_award'),
-            'title': u'修改奖项'
-        }
-    }
 
+    url_setting = UrlSetting()
+    urls = url_setting.get_setting()
     url_list = []
     for name in name_lsit:
         if isinstance(name, dict):

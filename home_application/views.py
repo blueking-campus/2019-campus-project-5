@@ -179,8 +179,21 @@ def manage_organizations(request):
 @require_http_methods('GET')
 def personal_apply(request):
     """我的申报页面"""
-
-    return render_mako_context(request, '/home_application/apply.html')
+    router = get_url_list(['personal', 'personal_apply'])
+    # manage_show_award = reverse('manage_show_award')
+    # manage_clone_award = reverse('manage_clone_award')
+    # manage_change_award = reverse('manage_change_award')
+    # api_delete_award_ = reverse('api_delete_award')
+    # api_awards_ = reverse('api_awards')
+    data = {
+        'router': router,
+        # 'manage_show_award': manage_show_award,
+        # 'manage_clone_award': manage_clone_award,
+        # 'manage_change_award': manage_change_award,
+        # 'api_delete_award': api_delete_award_,
+        # 'api_awards': api_awards_,
+    }
+    return render_mako_context(request, '/home_application/personal_apply.html', data)
 
 
 @require_http_methods('GET')

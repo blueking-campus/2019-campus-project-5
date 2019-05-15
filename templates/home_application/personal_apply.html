@@ -1,10 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<%inherit file="/base.html"/>
+<%namespace name="topbar" file="/home_application/topbar.html"/>
+
+<%block name='head'>
+	<title>我的申请</title>
+    ${parent.head()}
+
+    <!--datetimepicker-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
+    <!--datatables-->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.css" rel="stylesheet"/>
+
+</%block>
+
+<%block name="content">
+    ${topbar.topbar()}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">奖项列表</div>
+        <div class="panel-body">
+            <!--内联表单 开始-->
+            <div id="toolbar">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="award">申请奖项：</label>
+                        <input type="text" class="form-control" id="award" placeholder="输入奖项名">
+                        <input type="hidden" id="award_value">
+                    </div>
+                    <div class="form-group">
+                        <label class="">状态：</label>
+                        <select name="" id="status" class="form-control">
+                            <option value="0">不限</option>
+                            <option value="1">已过期</option>
+                            <option value="2">有效</option>
+                        </select>
+                        <input type="hidden" id="status_value">
+                    </div>
+                    <div class="input-group date" data-date="" id="datetimepicker" data-date-format="dd MM yyyy HH MM SS" data-link-field="datetime_value" data-link-format="yyyy-mm-dd hh:ii:ss">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        <!--<label for="datetimepicker">申报时间：</label>-->
+                        <input class="form-control" size="16" type="text" value="" placeholder="申报时间" id="datetime">
+                        <input type="hidden" id="datetime_value">
+                        <br>
+                    </div>
+                    <button type="button" class="btn btn-theme btn-sm" id="search">&nbsp;&nbsp;查询&nbsp;&nbsp;</button>
+                </form>
+            </div>
+            <!-- 内联表单 结束 -->
+            <!-- 克隆模块 开始 -->
+
+            <!-- 克隆模块 结束 -->
+        </div>
+
+        <!-- Table -->
+        <div class="m10">
+            <table id="awards_table" class="table table-bordered table-hover dataTable no-footer" role="grid"></table>
+        </div>
+    </div>
+</%block>
+
+<!--datetimepicker-->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
+
+
+<!--datatables-->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/jquery.dataTables.js"></script>
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/datatables-1.10.7/dataTables.bootstrap.js"></script>
+
+
+
+<script type="text/javascript">
+    //日期选择器(Bootstrap)-2，日期选择
+    $('#datetimepicker').datetimepicker({
+        language:  'zh-TW',
+        weekStart: 1,
+        todayBtn:  true,
+        autoClose: true,
+        todayHighlight: true,
+        startView: 2,
+        minView: 0,
+        forceParse: false,
+        format:"yyyy-mm-dd hh:ii:ss",
+    });
+
+    //表格(DataTables)-1，html数据源
+    var language = {
+        search: '搜索：',
+        lengthMenu: "每页显示 _MENU_ 记录",
+        zeroRecords: "没找到相应的数据！",
+        info: "分页 _PAGE_ / _PAGES_",
+        infoEmpty: "暂无数据！",
+        infoFiltered: "(从 _MAX_ 条数据中搜索)",
+        paginate: {
+            first: '首页',
+            last: '尾页',
+            previous: '上一页',
+            next: '下一页',
+        }
+    }
+    $('#awards_table').dataTable({
+        autoWidth: false, // 自动宽度
+        paging: true, //分页
+        ordering: false, //关闭排序
+        info: false, //隐藏左下角分页信息
+        searching: false, //关闭搜索
+        pageLength : 10, //每页显示几条数据
+        lengthChange: false, //不允许用户改变表格每页显示的记录数
+        language: language, //汉化
+        // clickToSelect: true, //是否启用点击选中行
+        // serverSide: true, // 服务器分页
+        // ajax:{
+        //     "type": 'GET' ,
+        //     "url": '',
+        //     "data": function ( d ) {
+        //         return $.extend( {}, d, {
+        //             "name": $('#award_value').val(),
+        //             "organization": $('#organization_value').val(),
+        //             "datetime": $('#datetime_value').val(),
+        //             "status": $('#status_value').val(),
+        //         });
+        //     }
+        // },
+        columns: [{
+            'data': null,
+            'title': '序号',
+            'render': function(data,type,row,meta) {
+                return meta.row + 1 + meta.settings._iDisplayStart;
+            }
+        }, {
+            'data': 'key',
+            'title': 'key',
+            'visible': false
+        },{
+            'data': 'award__organization__name',
+            'title': '所属组织',
+        },{
+            'data': 'award__name',
+            'title': '奖项名称',
+        },{
+            'data': 'award__status',
+            'title': '奖项状态',
+        },{
+            'data': 'applicant',
+            'title': '申请人/团队',
+        },{
+            'data': 'status',
+            'title': '申请状态',
+        },{
+            'data': 'created_time',
+            'title': '申请时间',
+        },{
+            'data': null,
+            'title': '操作',
+            'className': 'text-center whiteSpace',
+            'render':  function(data,type,row,meta) {
+                // 未审核/已通过： 查看，编辑
+                // 未通过： 查看， 编辑， 重新申请
+                // 已获奖/未获奖： 查看
+                var content = `<p>123</p>`;
+                return content;
+            }
+        }],
+
+    });
+
+    // 点击查询按钮
+    // $('#search').click({api: $('#awards_table').DataTable()},function (event){
+    //
+    //     $('#award_value').val($('#award').val());
+    //     $('#organization_value').val($('#organization').val());
+    //     $('#datetime_value').val($('#datetime').val());
+    //     $('#status_value').val($('#status').val());
+    //
+    //     let table = event.data.api;
+    //     console.log(table);
+    //
+    //     table.ajax.reload();
+    // })
+
+
+</script>
+
