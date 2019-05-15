@@ -48,24 +48,8 @@ def home(request):
 
 
 @require_http_methods('GET')
-def personal(request):
-    my_apply_awards = Award.objects.all_by_username(request.user)
-    my_review_awrds = Award.objects.all_by_username(request.user)
-    data = {'my_apply_awards': my_apply_awards,
-            'my_review_awrds': my_review_awrds,
-            'username': request.user}
-    return render_mako_context(request, '/home_application/personal.html',data)
-
-
-@require_http_methods('GET')
 @require_superuser
-def manage(request):
-    return render_mako_context(request, '/home_application/manage.html')
-
-
-@require_http_methods('GET')
-@require_superuser
-def awards(request):
+def manage_awards(request):
     """奖项管理页面"""
     router = get_url_list(['manage', 'manage_awards'])
     manage_show_award = reverse('manage_show_award')
@@ -85,8 +69,8 @@ def awards(request):
 
 
 @require_http_methods('GET')
-#@require_superuser
-def add_award(request):
+@require_superuser
+def manage_add_award(request):
     """添加奖项页面"""
 
     levels = Level.objects.all_list()
@@ -105,7 +89,7 @@ def add_award(request):
 
 @require_http_methods('GET')
 @require_superuser
-def clone_award(request):
+def manage_clone_award(request):
     """克隆奖项页面"""
     router = get_url_list(['manage', 'manage_awards'])
     data = {
@@ -116,7 +100,7 @@ def clone_award(request):
 
 @require_http_methods('GET')
 @require_superuser
-def change_award(request):
+def manage_change_award(request):
     """修改奖项页面"""
     print request.GET
     award__key = request.GET.get('award__key')
@@ -147,7 +131,7 @@ def change_award(request):
 
 @require_http_methods('GET')
 @require_superuser
-def show_award(request):
+def manage_show_award(request):
     """展示奖项页面"""
     print request.GET
     award__key = request.GET.get('award__key')
@@ -179,7 +163,7 @@ def show_award(request):
 
 @require_http_methods('GET')
 @require_superuser
-def organizations(request):
+def manage_organizations(request):
     """组织管理页面"""
     router = get_url_list(['manage', 'manage_organizations'])
     api_organizations_ = reverse('api_organizations')
@@ -191,23 +175,27 @@ def organizations(request):
     }
     return render_mako_context(request, '/home_application/manage_organizations.html', data)
 
+
 @require_http_methods('GET')
-def apply(request):
+def personal_apply(request):
     """我的申报页面"""
 
     return render_mako_context(request, '/home_application/apply.html')
 
+
 @require_http_methods('GET')
-def review(request):
+def personal_review(request):
     """我的审核页面"""
 
     return render_mako_context(request, '/home_application/review.html')
 
+
 @require_http_methods('GET')
-def awards_review(request):
+def personal_awards_review(request):
     """我的审核页面"""
 
     return render_mako_context(request, '/home_application/awards_review.html')
+
 
 @require_http_methods('POST')
 @require_superuser
@@ -215,7 +203,7 @@ def awards_review(request):
 # @require_int_GET('length')
 # @require_datetime_GET('datetime')
 def api_all_organizations(request):
-
+    """api 查询所有奖项"""
     draw = int(request.POST.get('draw'))
     page = int(request.POST.get('start', 1))+1
     page_size = int(request.POST.get('length', 10))
@@ -245,6 +233,7 @@ def api_all_awards(request):
     awards_ = Award.objects.all(page=page, page_size=page_size, date_time=datetime, name=name, organization=organization, status=status)
     awards_['draw'] = draw
     return JsonResponse(awards_)
+
 
 @require_http_methods('POST')
 @require_superuser
@@ -278,7 +267,6 @@ def api_add_award(request):
         return HttpResponse('添加成功', content_type='text')
 
 
-
 @require_http_methods('POST')
 @require_superuser
 def api_change_award(request):
@@ -310,6 +298,7 @@ def api_change_award(request):
     else:
         return HttpResponse('修改成功', content_type='text')
 
+
 @require_http_methods('POST')
 @require_superuser
 def api_delete_award(request):
@@ -323,6 +312,14 @@ def api_delete_award(request):
         print err
         return HttpResponse('删除失败', status=500)
     return HttpResponse('删除成功')
+
+
+@require_http_methods('POST')
+@require_superuser
+def api_delete_award(request):
+    """api 克隆奖项"""
+
+    pass
 
 
 @require_http_methods('POST')
