@@ -21,14 +21,20 @@ urlpatterns = patterns(
     url(r'^personal/review/$', 'personal_review', name='personal_review'),   # 我的审核页面
     url(r'^personal/review/awards_review/$', 'personal_awards_review'),      # 奖项审批页面，通过按钮进入
 
+    url(r'^application/apply/$', 'application_apply', name='application_apply'),    # 奖项申请页面
 
-    url(r'^login_qq/$', 'login_qq', name='login_qq'),               # 手动登记QQ页面
+    url(r'^login_qq/$', 'login_qq', name='login_qq'),                       # 手动登记QQ页面
 
     url(r'^api/all_awards/$', 'api_all_awards', name='api_awards'),                      # 查询所有awards
     url(r'^api/all_organizations/$', 'api_all_organizations', name='api_organizations'), # 查询所有awards
     url(r'^api/add_award/$', 'api_add_award', name='api_add_award'),                     # 增加award
     url(r'^api/change_award/$', 'api_change_award', name='api_change_award'),            # 修改award
     url(r'^api/delete_award/$', 'api_delete_award', name='api_delete_award'),            # 删除award
-    url(r'^api/login_qq/$', 'api_login_qq', name='api_login_qq'),                        # 登记qq
     url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),  # 删除organizations
+
+    url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),    # 查询所有我的申请
+    url(r'^api/apply/$', 'api_apply', name='api_apply'),             # 奖项申报
+
+
+    url(r'^api/login_qq/$', 'api_login_qq', name='api_login_qq'),       # 登记qq
 )

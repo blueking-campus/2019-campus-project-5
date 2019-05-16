@@ -30,9 +30,12 @@
                     <div class="form-group">
                         <label class="">状态：</label>
                         <select name="" id="status" class="form-control">
-                            <option value="0">不限</option>
-                            <option value="1">已过期</option>
-                            <option value="2">有效</option>
+                            <option value="-1">不限</option>
+                            <option value="0">未审核</option>
+                            <option value="1">未通过</option>
+                            <option value="2">已通过</option>
+                            <option value="3">已获奖</option>
+                            <option value="4">未获奖</option>
                         </select>
                         <input type="hidden" id="status_value">
                     </div>
@@ -108,20 +111,19 @@
         pageLength : 10, //每页显示几条数据
         lengthChange: false, //不允许用户改变表格每页显示的记录数
         language: language, //汉化
-        // clickToSelect: true, //是否启用点击选中行
-        // serverSide: true, // 服务器分页
-        // ajax:{
-        //     "type": 'GET' ,
-        //     "url": '',
-        //     "data": function ( d ) {
-        //         return $.extend( {}, d, {
-        //             "name": $('#award_value').val(),
-        //             "organization": $('#organization_value').val(),
-        //             "datetime": $('#datetime_value').val(),
-        //             "status": $('#status_value').val(),
-        //         });
-        //     }
-        // },
+        clickToSelect: true, //是否启用点击选中行
+        serverSide: true, // 服务器分页
+        ajax:{
+            "type": 'GET' ,
+            "url": '${api_my_apply}',
+            "data": function ( d ) {
+                return $.extend( {}, d, {
+                    "name": $('#award_value').val(),
+                    "datetime": $('#datetime_value').val(),
+                    "status": $('#status_value').val(),
+                });
+            }
+        },
         columns: [{
             'data': null,
             'title': '序号',
@@ -139,14 +141,38 @@
             'data': 'award__name',
             'title': '奖项名称',
         },{
-            'data': 'award__status',
+            'data': 'award__is_active',
             'title': '奖项状态',
+            'render': function (data, type, row, meta) {
+                let content = '';
+                if (data) {
+                    content = '有效';
+                } else {
+                    content = '无效';
+                }
+                return content;
+            }
         },{
             'data': 'applicant',
             'title': '申请人/团队',
         },{
             'data': 'status',
             'title': '申请状态',
+            'render': function (data, type, row, meta) {
+                let content = '';
+                if (data===0) {
+                    content = '未审核';
+                } else if (data===1) {
+                    content = '未通过';
+                } else if (data===2) {
+                    content = '已通过';
+                } else if (data===3) {
+                    content = '未获奖';
+                } else if (data===4) {
+                    content = '已获奖';
+                }
+                return content;
+            }
         },{
             'data': 'created_time',
             'title': '申请时间',
@@ -158,7 +184,22 @@
                 // 未审核/已通过： 查看，编辑
                 // 未通过： 查看， 编辑， 重新申请
                 // 已获奖/未获奖： 查看
-                var content = `<p>123</p>`;
+                let content = `操作`;
+                let check = ``;
+                let edite = ``;
+                let reapply = ``;
+                if (row.status===0) {
+                    // content = '未审核';
+                } else if (row.status===1) {
+                    // content = '未通过';
+                } else if (row.status===2) {
+                    // content = '已通过';
+                } else if (row.status===3) {
+                    // content = '未获奖';
+                } else if (row.status===4) {
+                    // content = '已获奖';
+                }
+
                 return content;
             }
         }],
@@ -166,18 +207,17 @@
     });
 
     // 点击查询按钮
-    // $('#search').click({api: $('#awards_table').DataTable()},function (event){
-    //
-    //     $('#award_value').val($('#award').val());
-    //     $('#organization_value').val($('#organization').val());
-    //     $('#datetime_value').val($('#datetime').val());
-    //     $('#status_value').val($('#status').val());
-    //
-    //     let table = event.data.api;
-    //     console.log(table);
-    //
-    //     table.ajax.reload();
-    // })
+    $('#search').click({api: $('#awards_table').DataTable()},function (event){
+
+        $('#award_value').val($('#award').val());
+        $('#datetime_value').val($('#datetime').val());
+        $('#status_value').val($('#status').val());
+
+        let table = event.data.api;
+        console.log(table);
+
+        table.ajax.reload();
+    })
 
 
 </script>

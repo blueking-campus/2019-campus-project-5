@@ -12,9 +12,7 @@ from django.core.paginator import PageNotAnInteger
 
 from account.models import BkUser
 
-from home_application.utils import (
-    DateJSONEncoder, generateUUID
-)
+from home_application.utils import DateJSONEncoder, generateUUID
 
 
 class UserManager(models.Manager):
@@ -276,6 +274,7 @@ class AwardManager(models.Manager):
                 'requirement': award.requirement,
                 'level__name': award.level.name,
                 'organization__key': award.organization.key,
+                'organization__name': award.organization.name,
                 'is_active': award.is_active,
                 'begin_time': award.begin_time,
                 'is_attached': award.is_attached,
@@ -289,6 +288,21 @@ class AwardManager(models.Manager):
             raise ObjectDoesNotExist('%s %s' % (info, err))
         else:
             return data
+
+    def can_apply(self, username, award_key):
+        """判断该username是否能申请该奖项"""
+        if not User.objects.username_exist(username):
+            return False
+        user = User.objects.get(username=username)
+        qq = user.get_qq()
+        try:
+            self.get(key=award_key, organization__applicant__contains=qq)
+        except ObjectDoesNotExist, err:
+            print err
+            return False
+        else:
+            return True
+
 
     def delete(self, key_list):
         """批量逻辑删除奖项"""
@@ -436,20 +450,83 @@ class ApplicationManager(models.Manager):
         return super(models.Manager, self).filter(is_deleted=False)
 
     def awarded(self, username):
-        """根据username查询已过期的奖项"""
+        """根据username查询已过期的奖项申请"""
         try:
             qq = User.objects.get(username=username).get_qq()
         except ObjectDoesNotExist, err:
             print 'ApplicationManager:awarded get qq by username:', err
             return []
         now = datetime.datetime.now()
-        apps = Application.objects.all().filter(award__organization__applicant__contains=qq, status=4)
+        apps = self.all().filter(award__organization__applicant__contains=qq, status=4)
         apps = apps.filter(Q(award__begin_time__gte=now) | Q(award__end_time__lte=now) | Q(award__is_active=False))
 
         data = apps.values('key', 'award__organization__name', 'award__name', 'created_time', 'applicant')
         data = json.dumps(list(data), cls=DateJSONEncoder)
         data = json.loads(data)
         return data
+
+    def my_apply(self, *args, **kwargs):
+        """根据username得到我的申请"""
+        username = kwargs.get('username')
+        name = kwargs.get('name')
+        status = kwargs.get('status')
+        date_time = kwargs.get('date_time')
+        page = kwargs.get('page', 1)
+        page_size = kwargs.get('page_size', 10)
+
+        print '###apply: kwargs: ', kwargs
+        # 所有未逻辑删除的我的申请
+        applications = self.all().filter(user__username=username)
+        print '###my_apply applications:', applications
+        if name:
+            # 模糊查询奖项名
+            applications = applications.filter(award__name__icontains=name)
+        if status != -1 and status:
+            # 查询申请状态
+            # (0, u'未审核'), (1, u'未通过'), (2, u'已通过'), (3, u'未获奖'), (4, u'已获奖')
+            applications = applications.filter(status=status)
+        if date_time:
+            # 查询时间
+            date_time = datetime.datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+            delta = datetime.timedelta(hours=12)
+            later = date_time+delta
+            early = date_time-delta
+            applications = applications.filter(created_time__lte=later, created_time__gte=early)
+
+        # 分页
+        response = {}
+        paginator = Paginator(applications, page_size)
+        response['recordsTotal'] = paginator.count
+        response['recordsFiltered'] = paginator.count
+
+        print '###my_apply:', response
+        print '###my_apply applications:', applications
+        try:
+            applications = paginator.page(page).object_list
+        except PageNotAnInteger, err:
+            print err
+            applications = paginator.page(1).object_list
+        except EmptyPage, err:
+            print err
+            applications = paginator.page(paginator.num_pages).object_list
+        except ZeroDivisionError, err:
+            print err
+            response['awards'] = []
+            return response
+
+        # 格式化数据
+        data = applications.values('key',
+                                   'award__organization__name',
+                                   'award__name',
+                                   'created_time',
+                                   'applicant',
+                                   'status',
+                                   'award__is_active')
+        data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
+        response['data'] = data
+        return response
+
 
 class Application(models.Model):
     """奖项申请"""
@@ -485,6 +562,52 @@ class Application(models.Model):
                 self.save()
         except Exception:
             return False
+        else:
+            return True
+
+    @classmethod
+    def apply(cls, username, award_key, applicant, introduction):
+        """申请奖项"""
+        # 查用户
+        try:
+            user = BkUser.objects.get(username=username)
+        except ObjectDoesNotExist, err:
+            info = 'ApplicationManager:apply  error when get BkUser:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
+
+        # 查奖项
+        try:
+            award = Award.objects.get(key=award_key)
+        except ObjectDoesNotExist, err:
+            info = 'ApplicationManager:apply  error when get Award:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
+
+        # 查是否已经申请
+        try:
+            cls.objects.get(award=award, user=user)
+        except ObjectDoesNotExist, err:
+            print err
+        else:
+            raise RuntimeError('该用户已经申报该奖项')
+
+        # 申请
+        try:
+            with transaction.atomic():
+                key = generateUUID()
+                new_apply = cls(applicant=applicant,
+                                introduction=introduction,
+                                user=user,
+                                award=award,
+                                status=0,
+                                is_deleted=False,
+                                key=key)
+                new_apply.save()
+        except ValueError, err:
+            info = 'Application: apply: error when save new application'
+            print info, err
+            raise ValueError('%s %s' % (info, err))
         else:
             return True
 

@@ -3,16 +3,10 @@ from common.mymako import render_mako_context
 from django.views.decorators.http import require_http_methods
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import (
-    HttpResponse, JsonResponse
-)
+from django.http import  HttpResponse, JsonResponse
 
-from home_application.models import (
-    Award, Application, User, Level, Organization
-)
-from home_application.decorators import (
-    require_datetime_GET, require_int_GET, require_superuser
-)
+from home_application.models import Award, Application, User, Level, Organization, Application
+from home_application.decorators import require_datetime_GET, require_int_GET, require_superuser
 from home_application.utils import get_url_list
 
 
@@ -24,7 +18,7 @@ def login_qq(request):
 def api_login_qq(request):
     """手动添加qq"""
     qq = request.POST.get('qq');
-    username = request.user
+    username = request.user.username
     print username, qq
     user = User()
     if user.save_qq(username=username, qq=qq):
@@ -36,8 +30,8 @@ def api_login_qq(request):
 @require_http_methods('GET')
 def home(request):
     """首页"""
-    viewable_awards = Award.objects.all_by_username(username=request.user, is_active=True)
-    outdated_awards = Application.objects.awarded(username=request.user)
+    viewable_awards = Award.objects.all_by_username(username=request.user.username, is_active=True)
+    outdated_awards = Application.objects.awarded(username=request.user.username)
     router = get_url_list(['home'])
     data = {
         'viewable_awards': viewable_awards,
@@ -180,18 +174,11 @@ def manage_organizations(request):
 def personal_apply(request):
     """我的申报页面"""
     router = get_url_list(['personal', 'personal_apply'])
-    # manage_show_award = reverse('manage_show_award')
-    # manage_clone_award = reverse('manage_clone_award')
-    # manage_change_award = reverse('manage_change_award')
-    # api_delete_award_ = reverse('api_delete_award')
-    # api_awards_ = reverse('api_awards')
+    api_my_apply_ = reverse('api_my_apply')
+
     data = {
         'router': router,
-        # 'manage_show_award': manage_show_award,
-        # 'manage_clone_award': manage_clone_award,
-        # 'manage_change_award': manage_change_award,
-        # 'api_delete_award': api_delete_award_,
-        # 'api_awards': api_awards_,
+        'api_my_apply': api_my_apply_,
     }
     return render_mako_context(request, '/home_application/personal_apply.html', data)
 
@@ -208,6 +195,30 @@ def personal_awards_review(request):
     """我的审核页面"""
 
     return render_mako_context(request, '/home_application/awards_review.html')
+
+
+@require_http_methods('GET')
+def application_apply(request):
+    """奖项申请页面"""
+    award_key = request.GET.get('award_key')
+    username = request.user.username
+    if not Award.objects.can_apply(username=username, award_key=award_key):
+        # 不能申请该奖项
+        return render_mako_context(request, '/403.html')
+    try:
+        award = Award.objects.get_values(award_key)
+    except ObjectDoesNotExist, err:
+        print err
+        return HttpResponse('不存在该奖项', status=400)
+    else:
+        router = get_url_list(['application_apply'])
+        api_apply_ = reverse('api_apply')
+        data = {
+            'award': award,
+            'router': router,
+            'api_apply': api_apply_,
+        }
+    return render_mako_context(request, '/home_application/application_apply.html', data)
 
 
 @require_http_methods('POST')
@@ -340,3 +351,52 @@ def api_delete_award(request):
 def api_delete_organizations(request):
     """api 删除organizations"""
     return HttpResponse('OK')
+
+
+@require_http_methods('GET')
+def api_my_apply(request):
+    """api 查询所有我的申请"""
+    username = request.user.username
+    draw = int(request.GET.get('draw'))
+    page = int(request.GET.get('start', 1))+1
+    page_size = int(request.GET.get('length', 10))
+    name = request.GET.get('name', '')
+
+    try:
+        status = int(request.GET.get('status'))
+    except ValueError, err:
+        print err
+        status = -1
+    datetime = request.GET.get('datetime', '').replace('&nbsp;', ' ')
+
+    my_apply = Application.objects.my_apply(username=username, page=page, page_size=page_size, date_time=datetime, name=name, status=status)
+    my_apply['draw'] = draw
+    print '###view: my_apply:', my_apply
+    return JsonResponse(my_apply)
+
+
+@require_http_methods('POST')
+def api_apply(request):
+    """api 申请奖项"""
+    award_key = request.POST.get('award_key')
+    applicant = request.POST.get('applicant')
+    introduction = request.POST.get('introduction')
+
+    username = request.user.username
+    if not Award.objects.can_apply(username=username, award_key=award_key):
+        # 不能申请该奖项
+        return render_mako_context(request, '/403.html')
+
+    try:
+        Application.apply(username=username, award_key=award_key, applicant=applicant, introduction=introduction)
+    except ObjectDoesNotExist, err:
+        print err
+        return HttpResponse('申报失败，不存在该奖项', status=400)
+    except ValueError, err:
+        print err
+        return HttpResponse('申报失败，保存内容失败', status=400)
+    except RuntimeError, err:
+        print err
+        return HttpResponse('申报失败，你已经申报了该奖项', status=400)
+    else:
+        return HttpResponse('申报成功')

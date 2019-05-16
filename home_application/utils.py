@@ -41,6 +41,10 @@ class UrlSetting(object):
                 'url': reverse('manage_change_award'),
                 'title': u'修改奖项'
             },
+            'application_apply': {
+                'url': '#',
+                'title': u'奖项申报'
+            },
             'personal': {
                 'url': '#',
                 'title': u'个人管理'
