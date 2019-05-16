@@ -603,6 +603,8 @@ class Application(models.Model):
                                 status=0,
                                 is_deleted=False,
                                 key=key)
+                award.apply_number += 1
+                award.save()
                 new_apply.save()
         except ValueError, err:
             info = 'Application: apply: error when save new application'
