@@ -1,0 +1,242 @@
+<%inherit file="/base.html"/>
+<%namespace name="topbar" file="/home_application/topbar.html"/>
+
+<%block name='head'>
+	<title>奖项申报</title>
+	${parent.head()}
+	<!-- 富文本框 -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.default.min.css" rel="stylesheet">
+</%block>
+
+<%block name="content">
+	${topbar.topbar()}
+	<div class="panel panel-default">
+		<!-- Default panel contents -->
+		<!--<div class="panel-heading">申请奖项</div>-->
+		<div class="panel-body">
+			<!--面板主体 开始-->
+			    <div class="row">
+					<div class="col-sm-6">
+						<!-- 左边 -->
+						<form class="form-horizontal style-form form-panel" id="award_form">
+							<div class="form-group" style="display: none">
+								<input type="text" class="form-control bk-valign-top" id="key" name="key" >
+							</div>
+							<div class="form-group ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="name">奖项名称：</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control bk-valign-top" id="name" name="name" placeholder="名称" > </div>
+							</div>
+							<div class="form-group   ">
+								<label class="control-label col-sm-2 pt0" for="editor">奖项评价：</label>
+								<div class="col-sm-9">
+									<!-- 富文本框 开始 -->
+									<textarea id="editor" name="requirement" rows="10" cols="30" style="height: 200px; width: 99%; margin: 0px auto; display: none;" data-role="editor" autocomplete="off" class="k-content k-raw-content">
+									</textarea>
+									<!-- 富文本框 结束 -->
+								</div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="level__name">奖项级别：</label>
+								<div class="col-sm-9">
+									<input id="level__name" name="level__name" class="form-control">
+								</div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="organization__name">所属组织：</label>
+								<div class="col-sm-9">
+									<input id="organization__name" name="organization__name" class="form-control">
+								</div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="col-sm-2 control-label bk-lh30 pt0">开始时间：</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control bk-valign-top" id="begin_time" name="begin_time" placeholder="开始时间" > </div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="col-sm-2 control-label bk-lh30 pt0">结束时间：</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control bk-valign-top" id="end_time" name="end_time" placeholder="结束时间" > </div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="control-label col-sm-2 bk-lh30 pt0">是否有附件：</label>
+								<div class="col-sm-9">
+									<div class="radio pt0">
+										<label class="mr10">
+											<input type="radio" name="is_attached" id="has_attached" class="bk-top5" value="1">
+											<span class="bk-lh30">有</span>
+										</label>
+										<label class="mr10">
+											<input type="radio" name="is_attached" id="no_attached" class="bk-top5" value="0">
+											<span class="bk-lh30">无</span>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="control-label col-sm-2 bk-lh30 pt0">状态：</label>
+								<div class="col-sm-9">
+									<div class="radio pt0">
+										<label class="mr10">
+											<input type="radio" name="is_active" id="active" class="bk-top5" value="1">
+											<span class="bk-lh30">有效</span>
+										</label>
+										<label class="mr10">
+											<input type="radio" name="is_active" id="outdate" class="bk-top5" value="0">
+											<span class="bk-lh30">过期</span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</form>
+						<!-- 左边 结束 -->
+					</div>
+					<div class="col-sm-6">
+						<!-- 右边 -->
+						<form class="form-horizontal style-form form-panel" id="apply_form">
+							<div class="form-group ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="applicant">申请人/团队：</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control bk-valign-top" id="applicant" name="applicant" placeholder="申请人/团队" >
+								</div>
+							</div>
+							<div class="form-group ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="introduction">事迹介绍：</label>
+								<div class="col-sm-9">
+									<textarea class="form-control" id="introduction" name="introduction" placeholder="事迹介绍" style="height: 496px;"></textarea>
+								</div>
+							</div>
+							<div class="form-group clearfix">
+								<div class="col-sm-4 col-sm-offset-8">
+									<button type="button" class="btn btn-theme" id="submit">我要申报</button>
+									<button type="button" class="btn btn-default">取消</button>
+								</div>
+							</div>
+						</form>
+						<!-- 右边 结束 -->
+					</div>
+				</div>
+			<!--面板主体 结束-->
+		</div>
+	</div>
+
+</%block>
+
+
+<!-- 富文本框 -->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/js/kendo.all.min.js"></script>
+
+<!-- 表单验证 -->
+<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/validate-1.14.0/js/jquery.validate.js"></script>
+
+
+<script type="text/javascript">
+
+    // 富文本编辑框
+    $("#editor").kendoEditor({
+        resizable: {
+            content: true,
+            toolbar: true
+        },
+        imageBrowser: {
+            fileTypes: "*.gif", //图片格式，默认为".png,.gif,.jpg,.jpeg"
+            path: "/uploads/", //定义初始文件夹
+            transport: {
+                  uploadUrl: "imagebrowser/upload", //图片上传接口
+            }
+        }
+    });
+    let editor = $("#editor").data('kendoEditor');
+
+    // 表单校验
+    let form = $( "#apply_form" );
+    form.validate({
+        errorElement: 'span', //错误信息的容器
+        errorClass: 'text-danger',
+        // errorPlacement: function (error, element) {             //指定错误信息位置
+        //     if (element.attr('type')==="radio" || element.attr('type')==="checkbox") {
+        //         //如果是radio或checkbox
+        //         error.appendTo(element.parent().parent()); //将错误信息添加当前元素的父结点后面
+        //     }  else {
+        //         error.insertAfter(element);
+        //     }
+        // },
+        //验证规则
+        rules: {
+            applicant: {
+                required: true,
+            },
+            introduction: {
+                required: true,
+            },
+        },
+        //错误提示信息
+        messages: {
+            applicant: "申请人/团队不能为空",
+            introduction: "请输入事迹介绍",
+        },
+
+    });
+
+    // 我要申报按钮
+	$('#submit').click({'form': form}, function (e) {
+		let form = e.data['form'];
+	    if (form.valid()) {
+			let data = {
+			    'award_key': $('#key').val(),
+			    'applicant': $('#applicant').val(),
+				'introduction': $('#introduction').val(),
+			};
+			// ajax 请求
+			$.ajax({
+                type: "POST",
+                url: "${api_apply}",
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: data,
+                dataType: "text",
+                success: function(data){
+                    alert(data)
+                },
+                error: function(e){
+					alert(e.responseText);
+                }
+            });
+
+		}
+    });
+
+    // 初始化
+    $(document).ready(function () {
+        // award 表单赋值
+		$('#key').val("${award['key']}");
+		$('#name').val("${award['name']}");
+		$('#level__name').val("${award['level__name']}");
+		$('#organization__name').val("${award['organization__name']}")
+		$('#begin_time').val("${award['begin_time']}");
+		$('#end_time').val("${award['end_time']}");
+
+		let is_active = "${award['is_active']}";
+        let is_attached = "${award['is_attached']}";
+        if (is_active == "True") {
+            $('input:radio[name="is_active"]:first').attr('checked', 'true');
+        }else if (is_active == "False") {
+            $('input:radio[name="is_active"]:last').attr('checked', 'true');
+        }
+        if (is_attached == "True") {
+            $('input:radio[name="is_attached"]:first').attr('checked', 'true');
+        }else if (is_attached == "False") {
+            $('input:radio[name="is_attached"]:last').attr('checked', 'true');
+        }
+
+        let requirement = "${award['requirement']}";
+        // 反转义字符串 decodeURIComponent
+        requirement = unescape(requirement);
+        editor.value(requirement);
+
+
+        // 禁用award表单
+		$('#award_form').find('input').attr('disabled', 'disabled');
+        $(editor.body).attr('contenteditable', false);
+    });
+</script>
