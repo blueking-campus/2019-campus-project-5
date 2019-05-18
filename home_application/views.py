@@ -46,16 +46,16 @@ def home(request):
 def manage_awards(request):
     """奖项管理页面"""
     router = get_url_list(['manage', 'manage_awards'])
-    manage_show_award = reverse('manage_show_award')
-    manage_clone_award = reverse('manage_clone_award')
-    manage_change_award = reverse('manage_change_award')
+    manage_show_award_ = reverse('manage_show_award')
+    manage_clone_award_ = reverse('manage_clone_award')
+    manage_change_award_ = reverse('manage_change_award')
     api_delete_award_ = reverse('api_delete_award')
     api_awards_ = reverse('api_awards')
     data = {
         'router': router,
-        'manage_show_award': manage_show_award,
-        'manage_clone_award': manage_clone_award,
-        'manage_change_award': manage_change_award,
+        'manage_show_award': manage_show_award_,
+        'manage_clone_award': manage_clone_award_,
+        'manage_change_award': manage_change_award_,
         'api_delete_award': api_delete_award_,
         'api_awards': api_awards_,
     }
@@ -79,7 +79,7 @@ def manage_add_award(request):
     }
     print data
 
-    return render_mako_context(request, '/home_application/manage_award_edite.html', data)
+    return render_mako_context(request, '/home_application/manage_edit_award.html', data)
 
 @require_http_methods('GET')
 @require_superuser
@@ -89,7 +89,7 @@ def manage_clone_award(request):
     data = {
         'router': router
     }
-    return render_mako_context(request, '/home_application/manage_award_edite.html', data)
+    return render_mako_context(request, '/home_application/manage_edit_award.html', data)
 
 
 @require_http_methods('GET')
@@ -120,7 +120,7 @@ def manage_change_award(request):
         'api': api,
         'router': router
     }
-    return render_mako_context(request, '/home_application/manage_award_edite.html', data)
+    return render_mako_context(request, '/home_application/manage_edit_award.html', data)
 
 
 @require_http_methods('GET')
@@ -152,7 +152,7 @@ def manage_show_award(request):
         'router': router,
         'is_show': True,
     }
-    return render_mako_context(request, '/home_application/manage_award_edite.html', data)
+    return render_mako_context(request, '/home_application/manage_edit_award.html', data)
 
 
 @require_http_methods('GET')
@@ -175,12 +175,118 @@ def personal_apply(request):
     """我的申报页面"""
     router = get_url_list(['personal', 'personal_apply'])
     api_my_apply_ = reverse('api_my_apply')
-
+    personal_change_apply_ = reverse('personal_change_apply')
+    personal_show_apply_ = reverse('personal_show_apply')
+    personal_reapply_ = reverse('personal_reapply')
     data = {
         'router': router,
         'api_my_apply': api_my_apply_,
+        'personal_change_apply': personal_change_apply_,
+        'personal_show_apply': personal_show_apply_,
+        'personal_reapply': personal_reapply_,
     }
     return render_mako_context(request, '/home_application/personal_apply.html', data)
+
+
+@require_http_methods('GET')
+def personal_change_apply(request):
+    """修改申请页面"""
+    application__key = request.GET.get('application__key')
+    username = request.user.username
+
+    if not application__key:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application__key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.can_edit(username=username, key=application__key):
+        # 不能编辑该奖项
+        return render_mako_context(request, '/403.html')
+
+    try:
+        application_ = Application.objects.get_values(application__key)
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context(request, '/404.html')
+
+    router = get_url_list(['personal', 'personal_apply', 'personal_change_apply'])
+    api_change_apply_ = reverse('api_change_apply')
+    data = {
+        'application': application_['application'],
+        'award': application_['award'],
+        'router': router,
+        'api_chang_apply': api_change_apply_,
+    }
+    return render_mako_context(request, '/home_application/application_edit_apply.html', data)
+
+
+@require_http_methods('GET')
+def personal_reapply(request):
+    """重新申请页面"""
+    application__key = request.GET.get('application__key')
+    username = request.user.username
+
+    if not application__key:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application__key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.can_edit(username=username, key=application__key):
+        # 不能编辑该奖项
+        return render_mako_context(request, '/403.html')
+
+    try:
+        application_ = Application.objects.get_values(application__key)
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context(request, '/404.html')
+
+    router = get_url_list(['personal', 'personal_apply', 'personal_change_apply'])
+    api_reapply_ = reverse('api_reapply')
+    data = {
+        'application': application_['application'],
+        'award': application_['award'],
+        'router': router,
+        'api_chang_apply': api_reapply_,
+    }
+    return render_mako_context(request, '/home_application/application_edit_apply.html', data)
+
+
+@require_http_methods('GET')
+def personal_show_apply(request):
+    """查看申请页面"""
+    application__key = request.GET.get('application__key')
+
+    if not application__key:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application__key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+
+    try:
+        application_ = Application.objects.get_values(application__key)
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context(request, '/404.html')
+
+    router = get_url_list(['personal_show_apply'])
+    api_change_apply_ = reverse('api_change_apply')
+    data = {
+        'application': application_['application'],
+        'award': application_['award'],
+        'router': router,
+        'api_chang_apply': api_change_apply_,
+    }
+    return render_mako_context(request, '/home_application/application_show_apply.html', data)
 
 
 @require_http_methods('GET')
@@ -218,7 +324,7 @@ def application_apply(request):
             'router': router,
             'api_apply': api_apply_,
         }
-    return render_mako_context(request, '/home_application/application_apply.html', data)
+        return render_mako_context(request, '/home_application/application_apply.html', data)
 
 
 @require_http_methods('POST')
@@ -254,7 +360,7 @@ def api_all_awards(request):
     print status
     datetime = request.GET.get('datetime', '').replace('&nbsp;', ' ')
 
-    awards_ = Award.objects.all(page=page, page_size=page_size, date_time=datetime, name=name, organization=organization, status=status)
+    awards_ = Award.objects.all_search(page=page, page_size=page_size, date_time=datetime, name=name, organization=organization, status=status)
     awards_['draw'] = draw
     return JsonResponse(awards_)
 
@@ -327,23 +433,15 @@ def api_change_award(request):
 @require_superuser
 def api_delete_award(request):
     """api 删除award"""
-    key_list = request.POST.getlist('key[]');
+    key_list = request.POST.getlist('key[]')
     print request.POST
     print key_list
     try:
-        Award.objects.delete(key_list)
+        Award.objects.logic_delete(key_list)
     except Exception, err:
         print err
         return HttpResponse('删除失败', status=500)
     return HttpResponse('删除成功')
-
-
-@require_http_methods('POST')
-@require_superuser
-def api_delete_award(request):
-    """api 克隆奖项"""
-
-    pass
 
 
 @require_http_methods('POST')
@@ -373,6 +471,68 @@ def api_my_apply(request):
     my_apply['draw'] = draw
     print '###view: my_apply:', my_apply
     return JsonResponse(my_apply)
+
+
+@require_http_methods('POST')
+def api_change_apply(request):
+    """api 修改我的申请"""
+    username = request.user.username
+    application_key = request.POST.get('application_key')
+    applicant = request.POST.get('applicant')
+    introduction = request.POST.get('introduction')
+
+    if not application_key or not applicant or not introduction:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application_key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.can_edit(username=username, key=application_key):
+        # 不能编辑该奖项
+        return render_mako_context(request, '/403.html')
+    try:
+        Application.change(key=application_key, introduction=introduction, applicant=applicant)
+    except ObjectDoesNotExist, err:
+        print err
+        return HttpResponse('不存在该申请', status=400)
+    except ValueError, err:
+        print err
+        return HttpResponse('保存修改失败', status=500)
+    else:
+        return HttpResponse('保存成功')
+
+
+@require_http_methods('POST')
+def api_reapply(request):
+    """api 重新申请"""
+    username = request.user.username
+    application_key = request.POST.get('application_key')
+    applicant = request.POST.get('applicant')
+    introduction = request.POST.get('introduction')
+
+    if not application_key or not applicant or not introduction:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application_key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.can_edit(username=username, key=application_key):
+        # 不能编辑该奖项
+        return render_mako_context(request, '/403.html')
+    try:
+        Application.reapply(key=application_key, introduction=introduction, applicant=applicant)
+    except ObjectDoesNotExist, err:
+        print err
+        return HttpResponse('不存在该申请', status=400)
+    except ValueError, err:
+        print err
+        return HttpResponse('保存修改失败', status=500)
+    else:
+        return HttpResponse('重新申请成功')
 
 
 @require_http_methods('POST')

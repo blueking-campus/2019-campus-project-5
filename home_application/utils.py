@@ -53,6 +53,18 @@ class UrlSetting(object):
                 'url': reverse('personal_apply'),
                 'title': u'我的申报'
             },
+            'personal_change_apply': {
+                'url': '#',
+                'title': u'修改申报'
+            },
+            'personal_show_apply': {
+                'url': '#',
+                'title': u'展示申报'
+            },
+            'personal_reapply': {
+                'url': '#',
+                'title': u'重新申请'
+            },
             'personal_review': {
                 'url': reverse('personal_review'),
                 'title': u'我的审核'

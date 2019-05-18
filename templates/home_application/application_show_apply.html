@@ -2,7 +2,7 @@
 <%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
-	<title>修改申报</title>
+	<title>查看申报</title>
 	${parent.head()}
 	<!-- 富文本框 -->
     <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.common.min.css" rel="stylesheet">
@@ -110,12 +110,12 @@
 									<textarea class="form-control" id="introduction" name="introduction" placeholder="事迹介绍" style="height: 496px;"></textarea>
 								</div>
 							</div>
-							<div class="form-group clearfix">
-								<div class="col-sm-4 col-sm-offset-8">
-									<button type="button" class="btn btn-theme" id="submit">修改申报</button>
+							<!--<div class="form-group clearfix">-->
+								<!--<div class="col-sm-4 col-sm-offset-8">-->
+									<!--<button type="button" class="btn btn-theme" id="submit">修改申报</button>-->
 									<!--<button type="button" class="btn btn-default">取消</button>-->
-								</div>
-							</div>
+								<!--</div>-->
+							<!--</div>-->
 						</form>
 						<!-- 右边 结束 -->
 					</div>
@@ -129,10 +129,6 @@
 
 <!-- 富文本框 -->
 <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/js/kendo.all.min.js"></script>
-
-<!-- 表单验证 -->
-<script src="https://magicbox.bk.tencent.com/static_api/v3/assets/validate-1.14.0/js/jquery.validate.js"></script>
-
 
 <script type="text/javascript">
 
@@ -152,62 +148,6 @@
     });
     let editor = $("#editor").data('kendoEditor');
 
-    // 表单校验
-    let form = $( "#apply_form" );
-    form.validate({
-        errorElement: 'span', //错误信息的容器
-        errorClass: 'text-danger',
-        // errorPlacement: function (error, element) {             //指定错误信息位置
-        //     if (element.attr('type')==="radio" || element.attr('type')==="checkbox") {
-        //         //如果是radio或checkbox
-        //         error.appendTo(element.parent().parent()); //将错误信息添加当前元素的父结点后面
-        //     }  else {
-        //         error.insertAfter(element);
-        //     }
-        // },
-        //验证规则
-        rules: {
-            applicant: {
-                required: true,
-            },
-            introduction: {
-                required: true,
-            },
-        },
-        //错误提示信息
-        messages: {
-            applicant: "申请人/团队不能为空",
-            introduction: "请输入事迹介绍",
-        },
-
-    });
-
-    // 我要申报按钮
-	$('#submit').click({'form': form}, function (e) {
-		let form = e.data['form'];
-	    if (form.valid()) {
-			let data = {
-			    'application_key': $('#application_key').val(),
-			    'applicant': $('#applicant').val(),
-				'introduction': $('#introduction').val(),
-			};
-			// ajax 请求
-			$.ajax({
-                type: "POST",
-                url: "${api_chang_apply}",
-                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: data,
-                dataType: "text",
-                success: function(data){
-                    alert(data)
-                },
-                error: function(e){
-					alert(e.responseText);
-                }
-            });
-
-		}
-    });
 
     // 初始化
     $(document).ready(function () {
@@ -246,5 +186,7 @@
         // 禁用award表单
 		$('#award_form').find('input').attr('disabled', 'disabled');
         $(editor.body).attr('contenteditable', false);
+        $('#apply_form').find('input').attr('disabled', 'disabled');
+        $('#apply_form').find('textarea').attr('disabled', 'disabled');
     });
 </script>

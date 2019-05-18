@@ -185,19 +185,36 @@
                 // 未通过： 查看， 编辑， 重新申请
                 // 已获奖/未获奖： 查看
                 let content = `操作`;
-                let check = ``;
-                let edite = ``;
-                let reapply = ``;
+                let check = `<a class="btn btn-success btn-xs mr5"
+                                title="查看"
+                                href="${personal_show_apply}?application__key=` +data.key+`">
+                                <i class="fa fa-search "></i>
+                              </a>`;
+                let edite = `<a class="btn btn-warning btn-xs mr5"
+                                title="编辑"
+                                href="${personal_change_apply}?application__key=` +data.key+`">
+                                <i class="fa fa-cog "></i>
+                              </a>`;
+                let reapply = `<a class="btn btn-info btn-xs mr5"
+                                title="重新申报"
+                                href="${personal_reapply}?application__key=` +data.key+`">
+                                <i class="fa fa-refresh "></i>
+                              </a>`;
                 if (row.status===0) {
                     // content = '未审核';
+                    content = '<div class="">'+ check + edite + '</div>';
                 } else if (row.status===1) {
                     // content = '未通过';
+                    content = '<div class="">'+ check + edite + reapply + '</div>';
                 } else if (row.status===2) {
                     // content = '已通过';
+                    content = '<div class="">'+ check + edite + '</div>';
                 } else if (row.status===3) {
                     // content = '未获奖';
+                    content = '<div class="">'+ check + '</div>';
                 } else if (row.status===4) {
                     // content = '已获奖';
+                    content = '<div class="">'+ check + '</div>';
                 }
 
                 return content;

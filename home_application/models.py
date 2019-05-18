@@ -105,7 +105,7 @@ class OrganizationManager(models.Manager):
             # name为空或None，创建组织失败
             return False
 
-    def all(self, page, page_size):
+    def all_search(self, page, page_size):
         """查询所有未逻辑删除的组织"""
         orgs = super(models.Manager, self).filter(is_deleted=False)
         response = {}
@@ -188,9 +188,12 @@ class Organization(models.Model):
 
 class AwardManager(models.Manager):
     """奖项管理类"""
-
-    def all(self, name, organization, status, date_time, page=1, page_size=10):
+    def all_not_delete(self):
         """查询所有未逻辑删除的奖项"""
+        return super(models.Manager, self).filter(is_deleted=False)
+
+    def all_search(self, name, organization, status, date_time, page=1, page_size=10):
+        """分页查询未逻辑删除的奖项"""
 
         # 所有未逻辑删除的奖项
         awards = super(models.Manager, self).filter(is_deleted=False)
@@ -296,19 +299,22 @@ class AwardManager(models.Manager):
         user = User.objects.get(username=username)
         qq = user.get_qq()
         try:
-            self.get(key=award_key, organization__applicant__contains=qq)
+            self.get(key=award_key,
+                     is_deleted=False,
+                     organization__applicant__contains=qq,
+                     organization__is_deleted=False)
         except ObjectDoesNotExist, err:
             print err
             return False
         else:
             return True
 
-
-    def delete(self, key_list):
+    def logic_delete(self, award_key):
         """批量逻辑删除奖项"""
         try:
             with transaction.atomic():
-                super(models.Manager, self).filter(key__in=key_list, is_deleted=False).update(is_deleted=True)
+                Application.objects.filter(award__key__in=award_key).update(is_deleted=True)
+                self.filter(key__in=award_key).update(is_deleted=True)
         except Exception, err:
             print 'Award:delete update error:', err
             info = 'Award:delete update error:'
@@ -421,15 +427,16 @@ class Award(models.Model):
             raise ObjectDoesNotExist('%s %s' % (info, err))
         try:
             award = cls.objects.get(key=key)
-            award.name = name
-            award.requirement = requirement
-            award.level = level
-            award.organization = organization
-            award.begin_time = begin_time
-            award.end_time = end_time
-            award.is_active = is_active
-            award.is_attached = is_attached
-            award.save()
+            with transaction.atomic():
+                award.name = name
+                award.requirement = requirement
+                award.level = level
+                award.organization = organization
+                award.begin_time = begin_time
+                award.end_time = end_time
+                award.is_active = is_active
+                award.is_attached = is_attached
+                award.save()
         except ObjectDoesNotExist, err:
             info = 'Award:change award key not exist:'
             print info, err
@@ -445,7 +452,7 @@ class Award(models.Model):
 class ApplicationManager(models.Manager):
     """申请管理类"""
 
-    def all(self):
+    def all_not_deleted(self):
         """重载all"""
         return super(models.Manager, self).filter(is_deleted=False)
 
@@ -466,7 +473,7 @@ class ApplicationManager(models.Manager):
         return data
 
     def my_apply(self, *args, **kwargs):
-        """根据username得到我的申请"""
+        """根据username得到未删除的我的申请"""
         username = kwargs.get('username')
         name = kwargs.get('name')
         status = kwargs.get('status')
@@ -476,7 +483,7 @@ class ApplicationManager(models.Manager):
 
         print '###apply: kwargs: ', kwargs
         # 所有未逻辑删除的我的申请
-        applications = self.all().filter(user__username=username)
+        applications = self.all().filter(user__username=username, is_deleted=False)
         print '###my_apply applications:', applications
         if name:
             # 模糊查询奖项名
@@ -527,6 +534,53 @@ class ApplicationManager(models.Manager):
         response['data'] = data
         return response
 
+    def is_exist(self, key):
+        """判断该key的可用申请是否存在"""
+        if super(models.Manager, self).filter(key=key, is_deleted=False).exists():
+            return True
+        else:
+            return False
+
+    def can_edit(self, username, key):
+        """判断该用户是否可以编辑申请"""
+        app = super(models.Manager, self).filter(key=key,
+                                                 user__username=username,
+                                                 is_deleted=False)
+        # 只有未审核，未通过，已通过 可以编辑
+        app = app.filter(Q(status=0) | Q(status=1) | Q(status=2))
+        if app.exists():
+            return True
+        else:
+            return False
+
+    def logic_delete(self, key_list):
+        """批量逻辑删除申请"""
+        try:
+            with transaction.atomic():
+                self.filter(key__in=key_list).update(is_deleted=True)
+        except Exception, err:
+            print err
+            return False
+        else:
+            return True
+
+    def get_values(self, key):
+        """根据key返回对应的application的dirc格式数据"""
+        try:
+            application = super(models.Manager, self).get(key=key)
+            apply = {
+                'key': application.key,
+                'applicant': application.applicant,
+                'introduction': application.introduction,
+            }
+            award = Award.objects.get_values(application.award.key)
+        except ObjectDoesNotExist, err:
+            print 'ApplicationManager:get_values award not exist', err
+            info = 'ApplicationManager:get_values award not exist'
+            raise ObjectDoesNotExist('%s %s' % (info, err))
+        else:
+            return {'application': apply, 'award': award}
+
 
 class Application(models.Model):
     """奖项申请"""
@@ -560,7 +614,8 @@ class Application(models.Model):
             with transaction.atomic():
                 self.is_deleted = True
                 self.save()
-        except Exception:
+        except Exception, err:
+            print err
             return False
         else:
             return True
@@ -608,6 +663,53 @@ class Application(models.Model):
                 new_apply.save()
         except ValueError, err:
             info = 'Application: apply: error when save new application'
+            print info, err
+            raise ValueError('%s %s' % (info, err))
+        else:
+            return True
+
+    @classmethod
+    def change(cls, *args, **kwargs):
+        """修改我的申请"""
+        key = kwargs.get('key')
+        applicant = kwargs.get('applicant')
+        introduction = kwargs.get('introduction')
+        try:
+            app = cls.objects.get(key=key)
+            with transaction.atomic():
+                app.applicant = applicant
+                app.introduction = introduction
+                app.save()
+        except ObjectDoesNotExist, err:
+            info = 'Application:change application key not exist:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
+        except ValueError, err:
+            info = 'Application:change error in save application:'
+            print info, err
+            raise ValueError('%s %s' % (info, err))
+        else:
+            return True
+
+    @classmethod
+    def reapply(cls, *args, **kwargs):
+        """重新申请"""
+        key = kwargs.get('key')
+        applicant = kwargs.get('applicant')
+        introduction = kwargs.get('introduction')
+        try:
+            app = cls.objects.get(key=key)
+            with transaction.atomic():
+                app.applicant = applicant
+                app.introduction = introduction
+                app.status = 0
+                app.save()
+        except ObjectDoesNotExist, err:
+            info = 'Application:reapply application key not exist:'
+            print info, err
+            raise ObjectDoesNotExist('%s %s' % (info, err))
+        except ValueError, err:
+            info = 'Application:reapply error in save application:'
             print info, err
             raise ValueError('%s %s' % (info, err))
         else:

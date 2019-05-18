@@ -2,7 +2,7 @@
 <%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
-	<title>奖项申报</title>
+	<title>修改申报</title>
 	${parent.head()}
 	<!-- 富文本框 -->
     <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.common.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
 						<!-- 左边 -->
 						<form class="form-horizontal style-form form-panel" id="award_form">
 							<div class="form-group" style="display: none">
-								<input type="text" class="form-control bk-valign-top" id="key" name="key" >
+								<input type="text" class="form-control bk-valign-top" id="award_key" name="award_key" >
 							</div>
 							<div class="form-group ">
 								<label class="col-sm-2 control-label bk-lh30 pt0" for="name">奖项名称：</label>
@@ -95,6 +95,9 @@
 					<div class="col-sm-6">
 						<!-- 右边 -->
 						<form class="form-horizontal style-form form-panel" id="apply_form">
+							<div class="form-group" style="display: none">
+								<input type="text" class="form-control bk-valign-top" id="application_key" name="application_key" >
+							</div>
 							<div class="form-group ">
 								<label class="col-sm-2 control-label bk-lh30 pt0" for="applicant">申请人/团队：</label>
 								<div class="col-sm-9">
@@ -109,8 +112,8 @@
 							</div>
 							<div class="form-group clearfix">
 								<div class="col-sm-4 col-sm-offset-8">
-									<button type="button" class="btn btn-theme" id="submit">我要申报</button>
-									<button type="button" class="btn btn-default">取消</button>
+									<button type="button" class="btn btn-theme" id="submit">修改申报</button>
+									<!--<button type="button" class="btn btn-default">取消</button>-->
 								</div>
 							</div>
 						</form>
@@ -184,14 +187,14 @@
 		let form = e.data['form'];
 	    if (form.valid()) {
 			let data = {
-			    'award_key': $('#key').val(),
+			    'application_key': $('#application_key').val(),
 			    'applicant': $('#applicant').val(),
 				'introduction': $('#introduction').val(),
 			};
 			// ajax 请求
 			$.ajax({
                 type: "POST",
-                url: "${api_apply}",
+                url: "${api_chang_apply}",
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                 data: data,
                 dataType: "text",
@@ -209,12 +212,17 @@
     // 初始化
     $(document).ready(function () {
         // award 表单赋值
-		$('#key').val("${award['key']}");
+		$('#award_key').val("${award['key']}");
 		$('#name').val("${award['name']}");
 		$('#level__name').val("${award['level__name']}");
 		$('#organization__name').val("${award['organization__name']}")
 		$('#begin_time').val("${award['begin_time']}");
 		$('#end_time').val("${award['end_time']}");
+
+		// apply 表单赋值
+		$('#applicant').val("${application['applicant']}");
+		$('#introduction').val("${application['introduction']}");
+		$('#application_key').val("${application['key']}")
 
 		let is_active = "${award['is_active']}";
         let is_attached = "${award['is_attached']}";

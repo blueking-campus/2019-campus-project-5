@@ -17,9 +17,12 @@ urlpatterns = patterns(
     url(r'^manage/awards/$', 'manage_awards', name='manage_awards'),                       # 奖项管理页面
     url(r'^manage/organizations/$', 'manage_organizations', name='manage_organizations'),  # 组织管理页面
 
-    url(r'^personal/apply/$', 'personal_apply', name='personal_apply'),      # 我的申报页面
-    url(r'^personal/review/$', 'personal_review', name='personal_review'),   # 我的审核页面
-    url(r'^personal/review/awards_review/$', 'personal_awards_review'),      # 奖项审批页面，通过按钮进入
+    url(r'^personal/apply/$', 'personal_apply', name='personal_apply'),                         # 我的申报页面
+    url(r'^personal/change_apply/$', 'personal_change_apply', name='personal_change_apply'),    # 修改奖项申请页面
+    url(r'^personal/show_apply/$', 'personal_show_apply', name='personal_show_apply'),          # 查看奖项申请页面
+    url(r'^personal/reapply/$', 'personal_reapply', name='personal_reapply'),                   # 重新申请页面
+    url(r'^personal/review/$', 'personal_review', name='personal_review'),                      # 我的审核页面
+    url(r'^personal/review/awards_review/$', 'personal_awards_review'),             # 奖项审批页面，通过按钮进入
 
     url(r'^application/apply/$', 'application_apply', name='application_apply'),    # 奖项申请页面
 
@@ -32,8 +35,11 @@ urlpatterns = patterns(
     url(r'^api/delete_award/$', 'api_delete_award', name='api_delete_award'),            # 删除award
     url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),  # 删除organizations
 
-    url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),    # 查询所有我的申请
-    url(r'^api/apply/$', 'api_apply', name='api_apply'),             # 奖项申报
+    url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),               # 查询所有我的申请
+    url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),   # 查询所有我的申请
+    url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                  # 重新申请
+    url(r'^api/apply/$', 'api_apply', name='api_apply'),                        # 奖项申报
+
 
 
     url(r'^api/login_qq/$', 'api_login_qq', name='api_login_qq'),       # 登记qq
