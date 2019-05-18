@@ -35,7 +35,7 @@
         <!-- 左边 end -->
         <!-- content start -->
         <div class="king-content-wrap">
-            <div class="king-layout1-content" style="margin-left: 216px;">
+            <div class="king-layout1-content" style="margin-left: 0px;">
                 <!-- 面板 编辑 开始 -->
                 <div class="panel king-panel1 ml10 ">
                     <div class="panel-heading king-panel-head1 king-panel-top1">
@@ -79,26 +79,36 @@
                 <div class="form-group clearfix ">
                     <label class="col-sm-3 control-label bk-lh30 pt0">所属组织：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control bk-valign-top" id="" placeholder="提示信息"> </div>
+                        <input type="text" class="form-control bk-valign-top" id="zu_zhi" placeholder="必须输入"> </div>
                 </div>
                 <div class="form-group clearfix ">
                     <label class="col-sm-3 control-label bk-lh30 pt0">负责人员：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control bk-valign-top" id="" placeholder="提示信息"> </div>
+                        <input type="text" class="form-control bk-valign-top" id="zu_zhang" placeholder="必须输入,唯一一人"> </div>
                 </div>
-                <div class="form-group has-feedback clearfix ">
-                    <label class="control-label col-sm-3 pt0" for="introduction">参评人员：</label>
+                <div class="form-group clearfix ">
+                    <label class="col-sm-3 control-label bk-lh30 pt0">负责人员：</label>
                     <div class="col-sm-9">
-                        <textarea class="form-control" rows="3" placeholder="提示信息"></textarea>
-                    </div>
+                        <input type="text" class="form-control bk-valign-top" id="zu_yuan" placeholder="必须输入，以逗号隔开"> </div>
                 </div>
-
             </form>
         </div>
     </div>
 </body>`,
                 okValue: '确定',
                 ok: function() {
+                    var url = '${SITE_URL}api/add_organizations/';
+                    var zu_zhi = $('#zu_zhi').val();
+                    var zu_zhang = $('#zu_zhang').val();
+                    var zu_yuan = $('#zu_yuan').val();
+                    var param = {zu_zhi:zu_zhi, zu_zhang:zu_zhang, zu_yuan:zu_yuan};
+                    if(zu_zhi && zu_yuan && zu_zhang){
+                        $.get(url,param,function (res) {
+
+                        },'json');
+                    }
+                    else{alert("三项都不能为空，请重新输入");}
+
                     // do something
                 },
                 cancelValue: '取消',
@@ -138,7 +148,7 @@
             // clickToSelect: true, //是否启用点击选中行
             serverSide: true, // 服务器分页
             ajax:{
-                "type": 'POST' ,
+                "type": 'GET' ,
                 "url": '${api_organizations}',
 
             },

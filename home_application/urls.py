@@ -29,7 +29,7 @@ urlpatterns = patterns(
     url(r'^login_qq/$', 'login_qq', name='login_qq'),                       # 手动登记QQ页面
 
     url(r'^api/all_awards/$', 'api_all_awards', name='api_awards'),                      # 查询所有awards
-    url(r'^api/all_organizations/$', 'api_all_organizations', name='api_organizations'), # 查询所有awards
+    url(r'^api/all_organizations/$', 'api_all_organizations', name='api_organizations'), # 查询所有组织
     url(r'^api/add_award/$', 'api_add_award', name='api_add_award'),                     # 增加award
     url(r'^api/change_award/$', 'api_change_award', name='api_change_award'),            # 修改award
     url(r'^api/delete_award/$', 'api_delete_award', name='api_delete_award'),            # 删除award
@@ -43,4 +43,7 @@ urlpatterns = patterns(
 
 
     url(r'^api/login_qq/$', 'api_login_qq', name='api_login_qq'),       # 登记qq
+
+    url(r'^api/add_organizations/$', 'api_add_organizations', name='api_add_organizations'),  #增加组织
+    url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),
 )

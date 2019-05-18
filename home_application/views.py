@@ -327,17 +327,17 @@ def application_apply(request):
         return render_mako_context(request, '/home_application/application_apply.html', data)
 
 
-@require_http_methods('POST')
+@require_http_methods('GET')
 @require_superuser
 # @require_int_GET('start')
 # @require_int_GET('length')
 # @require_datetime_GET('datetime')
 def api_all_organizations(request):
     """api 查询所有奖项"""
-    draw = int(request.POST.get('draw'))
-    page = int(request.POST.get('start', 1))+1
-    page_size = int(request.POST.get('length', 10))
-    organizations_ = Organization.objects.all(page=page, page_size=page_size)
+    draw = int(request.GET.get('draw'))
+    page = int(request.GET.get('start', 1)) + 1
+    page_size = int(request.GET.get('length', 10))
+    organizations_ = Organization.objects.all_search(page=page, page_size=page_size)
     organizations_['draw'] = draw
     print organizations_
     return JsonResponse(organizations_)
@@ -364,6 +364,18 @@ def api_all_awards(request):
     awards_['draw'] = draw
     return JsonResponse(awards_)
 
+@require_http_methods('GET')
+@require_superuser
+def api_add_organizations(request):
+    zu_zhi = request.GET.get('zu_zhi')
+    zu_zhang = request.GET.get('zu_zhang')
+    zu_yuan = request.GET.get('zu_yuan')
+
+    print zu_zhi,zu_zhang,zu_yuan,request.GET
+
+    Organization.objects.create(name=zu_zhi, applicant=zu_yuan, manager=zu_zhang, is_deleted=False, key=zu_zhi)
+    print "瀹屾垚"
+    return HttpResponse('娣诲姞鎴愬姛', content_type='text')
 
 @require_http_methods('POST')
 @require_superuser
@@ -447,8 +459,16 @@ def api_delete_award(request):
 @require_http_methods('POST')
 @require_superuser
 def api_delete_organizations(request):
-    """api 删除organizations"""
-    return HttpResponse('OK')
+    """api 鍒犻櫎organizations"""
+    print 1
+    key_list = request.POST.getlist('key[]');
+    print 2
+    try:
+        Organization.objects.delete(key_list)
+    except Exception, err:
+        print err
+        return HttpResponse('删除失败', status=500)
+    return HttpResponse('删除成功')
 
 
 @require_http_methods('GET')
