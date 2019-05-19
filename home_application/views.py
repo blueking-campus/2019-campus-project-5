@@ -9,6 +9,8 @@ from home_application.models import Award, Application, User, Level, Organizatio
 from home_application.decorators import require_datetime_GET, require_int_GET, require_superuser
 from home_application.utils import get_url_list
 
+from home_application.utils import DateJSONEncoder, generateUUID
+
 
 # 开发框架中通过中间件默认是需要登录态的，如有不需要登录的，可添加装饰器login_exempt【装饰器引入from account.decorators import login_exempt】
 def login_qq(request):
@@ -373,7 +375,7 @@ def api_add_organizations(request):
 
     print zu_zhi,zu_zhang,zu_yuan,request.GET
 
-    Organization.objects.create(name=zu_zhi, reviewer=zu_zhang, applicant=zu_yuan, manager=zu_zhang, is_deleted=False, key=zu_zhi)
+    Organization.objects.create(name=zu_zhi, reviewer=zu_zhang, applicant=zu_yuan, manager=zu_zhang, is_deleted=False, key=generateUUID())
     print '成功'
     return HttpResponse('添加成功', content_type='text')
 
