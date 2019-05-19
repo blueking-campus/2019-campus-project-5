@@ -86,15 +86,15 @@ class Level(models.Model):
 class OrganizationManager(models.Manager):
     """组织管理类"""
 
-    def creat(self, name, reviwer, applicant, manager):
+    def creat(self, name, reviewer, applicant, manager):
         """创建组织"""
-        reviwer = '' if reviwer is None else reviwer
+        reviewer = '' if reviewer is None else reviewer
         applicant = '' if applicant is None else applicant
         if name:
             # name不为空或None
             try:
                 with transaction.atomic():
-                    Organization(name=name, reviwer=reviwer, applicant=applicant, manager=manager).save()
+                    Organization(name=name, reviewer=reviewer, applicant=applicant, manager=manager).save()
             except Exception:
                 # 数据库操作失败，创建组织失败
                 return False
@@ -104,6 +104,19 @@ class OrganizationManager(models.Manager):
         else:
             # name为空或None，创建组织失败
             return False
+
+    def logic_delete(self, organizations_key):
+        """批量逻辑删除奖项"""
+        try:
+            with transaction.atomic():
+                #Application.objects.filter(award__key__in=organizations_key).update(is_deleted=True)
+                self.filter(key__in=organizations_key).update(is_deleted=True)
+        except Exception, err:
+            print 'Award:delete update error:', err
+            info = 'Award:delete update error:'
+            raise Exception('%s %s' % (info, err))
+        else:
+            return True
 
     def all_search(self, page, page_size):
         """查询所有未逻辑删除的组织"""

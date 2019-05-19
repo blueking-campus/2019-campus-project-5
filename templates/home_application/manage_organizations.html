@@ -1,5 +1,5 @@
 <%inherit file="/base.html"/>
-<%namespace name="navbar" file="/home_application/manage_nav.html"/>
+
 <%namespace name="topbar" file="/home_application/topbar.html"/>
 
 <%block name='head'>
@@ -31,7 +31,7 @@
     ${topbar.topbar()}
     <div class="king-page-box king-layout1-main clearfix mt30">
         <!-- 左边 start -->
-        ${navbar.navbar()}
+
         <!-- 左边 end -->
         <!-- content start -->
         <div class="king-content-wrap">
@@ -77,17 +77,17 @@
         <div class="king-layout2-main mt15" style="width:420px;">
             <form class="form-horizontal">
                 <div class="form-group clearfix ">
-                    <label class="col-sm-3 control-label bk-lh30 pt0">所属组织：</label>
+                    <label class="col-sm-3 control-label bk-lh30 pt0">组织名：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control bk-valign-top" id="zu_zhi" placeholder="必须输入"> </div>
+                        <input type="text" class="form-control bk-valign-top" id="zu_zhi" placeholder="必须输入,且不能与之前的组织同名"> </div>
                 </div>
                 <div class="form-group clearfix ">
-                    <label class="col-sm-3 control-label bk-lh30 pt0">负责人员：</label>
+                    <label class="col-sm-3 control-label bk-lh30 pt0">负责人：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control bk-valign-top" id="zu_zhang" placeholder="必须输入,唯一一人"> </div>
                 </div>
                 <div class="form-group clearfix ">
-                    <label class="col-sm-3 control-label bk-lh30 pt0">负责人员：</label>
+                    <label class="col-sm-3 control-label bk-lh30 pt0">组织成员：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control bk-valign-top" id="zu_yuan" placeholder="必须输入，以逗号隔开"> </div>
                 </div>
@@ -108,6 +108,7 @@
                         },'json');
                     }
                     else{alert("三项都不能为空，请重新输入");}
+                    window.location.reload();
 
                     // do something
                 },
@@ -185,14 +186,38 @@
                 'className': 'text-center whiteSpace',
                 'render':  function(data,type,row,meta) {
                     var content = `<div class="">
-                                    <a class="king-btn-demo king-btn king-btn-icon king-round king-danger" title="删除" href="${api_delete_organizations}?organizations__key=`+data.key+`">
-                                        <i class="fa fa-close btn-icon"></i>
-                                    </a>
+                                    <button class="btn btn-danger btn-xs" title="删除" onclick='delete_organizations("`+data.key+`")' name="delete_btn"><i class="fa fa-trash-o "></i></button>
                                 </div>`
                     return content;
                 }
             }],
         });
+        let api = $('#awards_table').DataTable();
+        function delete_organizations(key) {
+        let res = confirm("确认删除奖项？同时将删除该组织对应的奖项与申请");
+        if (res){
+            $.ajax({
+                type: "POST",
+                url: "${api_delete_organizations}",
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {'key': [key]},
+                dataType: "text",
+                success: function(data){
+                    alert(data);
+                    api.ajax.reload();
+                },
+                error: function(e){
+                    if(e.status==302){
+                        location.href = e.responseText
+                    } else {
+                        alert(e.responseText)
+                    }
+                }
+            });
+            window.location.reload();
+        }
+        console.log(key);
+    }
 
 
 

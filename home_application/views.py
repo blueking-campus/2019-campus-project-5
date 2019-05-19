@@ -373,9 +373,9 @@ def api_add_organizations(request):
 
     print zu_zhi,zu_zhang,zu_yuan,request.GET
 
-    Organization.objects.create(name=zu_zhi, applicant=zu_yuan, manager=zu_zhang, is_deleted=False, key=zu_zhi)
-    print "瀹屾垚"
-    return HttpResponse('娣诲姞鎴愬姛', content_type='text')
+    Organization.objects.create(name=zu_zhi, reviewer=zu_zhang, applicant=zu_yuan, manager=zu_zhang, is_deleted=False, key=zu_zhi)
+    print '成功'
+    return HttpResponse('添加成功', content_type='text')
 
 @require_http_methods('POST')
 @require_superuser
@@ -459,12 +459,12 @@ def api_delete_award(request):
 @require_http_methods('POST')
 @require_superuser
 def api_delete_organizations(request):
-    """api 鍒犻櫎organizations"""
+    """api 删除organizations"""
     print 1
-    key_list = request.POST.getlist('key[]');
-    print 2
+    key_list = request.POST.getlist('key[]')
+    print key_list
     try:
-        Organization.objects.delete(key_list)
+        Organization.objects.logic_delete(key_list)
     except Exception, err:
         print err
         return HttpResponse('删除失败', status=500)
