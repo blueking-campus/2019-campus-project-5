@@ -397,16 +397,20 @@ def api_add_award(request):
     else:
         request.POST['is_attached'] = False
 
+    if Award.objects.name_exist(request.POST.get('name')):
+        return HttpResponse('已存在同名奖项', status=400)
+
     try:
         Award.create(request.POST)
     except ValueError, err:
         print err
-        return HttpResponse(''.join(['添加失败', err]), content_type='text')
+        return HttpResponse(''.join(['添加失败', err]), content_type='text', status=400)
     except ObjectDoesNotExist, err:
         print err
-        return HttpResponse(''.join(['添加失败', err]), content_type='text')
+        return HttpResponse(''.join(['添加失败', err]), content_type='text', status=400)
     else:
-        return HttpResponse('添加成功', content_type='text')
+        path = reverse('manage_awards')
+        return HttpResponse(path, content_type='text', status=302)
 
 
 @require_http_methods('POST')

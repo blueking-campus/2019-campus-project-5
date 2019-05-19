@@ -272,7 +272,7 @@
     // 删除按钮
     let api = $('#awards_table').DataTable();
     function delete_award(key) {
-        let res = confirm("确认删除奖项？");
+        let res = confirm("注意！删除奖项会将该奖项下的申请一并删除。确认删除奖项？");
         if (res){
             $.ajax({
                 type: "POST",

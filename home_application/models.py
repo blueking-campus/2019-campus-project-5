@@ -335,6 +335,12 @@ class AwardManager(models.Manager):
         else:
             return True
 
+    def name_exist(self, name):
+        """检查是否存在未删除的同名奖项"""
+        if self.filter(name=name, is_deleted=False).exists():
+            return True
+        else:
+            return False
 
 
 class Award(models.Model):
