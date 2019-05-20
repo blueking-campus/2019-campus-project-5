@@ -406,10 +406,10 @@ def api_add_award(request):
         Award.create(request.POST)
     except ValueError, err:
         print err
-        return HttpResponse(''.join(['添加失败', err]), content_type='text', status=400)
+        return HttpResponse('添加失败,保存奖项失败', content_type='text', status=400)
     except ObjectDoesNotExist, err:
         print err
-        return HttpResponse(''.join(['添加失败', err]), content_type='text', status=400)
+        return HttpResponse('添加失败，不存在该级别或者所属组织', content_type='text', status=400)
     else:
         path = reverse('manage_awards')
         return HttpResponse(path, content_type='text', status=302)
@@ -439,10 +439,10 @@ def api_change_award(request):
         Award.change(request.POST)
     except ValueError, err:
         print err
-        return HttpResponse(''.join(['添加失败', err]), content_type='text')
+        return HttpResponse('修改失败,保存奖项失败', content_type='text')
     except ObjectDoesNotExist, err:
         print err
-        return HttpResponse(''.join(['添加失败', err]), content_type='text')
+        return HttpResponse('修改失败，不存在该级别或者所属组织', content_type='text')
     else:
         return HttpResponse('修改成功', content_type='text')
 
