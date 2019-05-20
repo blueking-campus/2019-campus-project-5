@@ -173,6 +173,52 @@ def manage_organizations(request):
 
 
 @require_http_methods('GET')
+def personal_review(request):
+    """我的审核页面"""
+    router = get_url_list(['personal', 'personal_review'])
+    api_my_review_ = reverse('api_my_review')
+    pass_award_ = reverse('pass_award')
+    reject_award_ = reverse('reject_award')
+    give_award_ = reverse('give_award')
+    data = {
+        'router': router,
+        'api_my_review': api_my_review_,
+        'pass_award': pass_award_,
+        'reject_award': reject_award_,
+        'give_award': give_award_,
+    }
+    return render_mako_context(request, '/home_application/personal_review.html', data)
+
+@require_http_methods('GET')
+def pass_award(request):
+    pass
+
+@require_http_methods('GET')
+def reject_award(request):
+    pass
+
+@require_http_methods('GET')
+def give_award(request):
+    application__key = request.GET.get('application__key')
+    #username = request.user.username
+
+    try:
+        application_ = Application.objects.get_values(application__key)
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context(request, '/404.html')
+
+    router = get_url_list(['personal', 'personal_review', 'give_award'])
+    give_award_ = reverse('give_award')
+    data = {
+        'application': application_['application'],
+        'award': application_['award'],
+        'router': router,
+        'give_award': give_award_,
+    }
+    return render_mako_context(request, '/home_application/give_award.html', data)
+
+@require_http_methods('GET')
 def personal_apply(request):
     """我的申报页面"""
     router = get_url_list(['personal', 'personal_apply'])
@@ -290,19 +336,6 @@ def personal_show_apply(request):
     }
     return render_mako_context(request, '/home_application/application_show_apply.html', data)
 
-
-@require_http_methods('GET')
-def personal_review(request):
-    """我的审核页面"""
-
-    return render_mako_context(request, '/home_application/review.html')
-
-
-@require_http_methods('GET')
-def personal_awards_review(request):
-    """我的审核页面"""
-
-    return render_mako_context(request, '/home_application/awards_review.html')
 
 
 @require_http_methods('GET')
@@ -466,7 +499,6 @@ def api_delete_award(request):
 @require_superuser
 def api_delete_organizations(request):
     """api 删除organizations"""
-    print 1
     key_list = request.POST.getlist('key[]')
     print key_list
     try:
@@ -476,6 +508,18 @@ def api_delete_organizations(request):
         return HttpResponse('删除失败', status=500)
     return HttpResponse('删除成功')
 
+@require_http_methods('GET')
+def api_my_review(request):
+    """api 查询所有我的审核"""
+    username = request.user.username
+    draw = int(request.GET.get('draw'))
+    page = int(request.GET.get('start', 1))+1
+    page_size = int(request.GET.get('length', 10))
+
+    my_review = Application.objects.my_apply(username=username, page=page, page_size=page_size)
+    my_review['draw'] = draw
+    print '###view: my_apply:', my_review
+    return JsonResponse(my_review)
 
 @require_http_methods('GET')
 def api_my_apply(request):
