@@ -110,6 +110,19 @@
 									<textarea class="form-control" id="introduction" name="introduction" placeholder="事迹介绍" style="height: 496px;"></textarea>
 								</div>
 							</div>
+							% if award['is_attached']:
+							<div class="form-group ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="upload_file">附件</label>
+								<div class="col-sm-9">
+									<input type="file" id="upload_file" class="form-control">
+									% if application['access_key']:
+									<p class="help-block">已有附件：<a href="/api/download_file/?key=${application['access_key']}">${application['access_name']}</a></p>
+									% else:
+									<p class="help-block">添加附件</p>
+									% endif
+								</div>
+							</div>
+							% endif
 							<div class="form-group clearfix">
 								<div class="col-sm-4 col-sm-offset-8">
 									<button type="button" class="btn btn-theme" id="submit">修改申报</button>
@@ -186,23 +199,53 @@
 	$('#submit').click({'form': form}, function (e) {
 		let form = e.data['form'];
 	    if (form.valid()) {
-			let data = {
-			    'application_key': $('#application_key').val(),
-			    'applicant': $('#applicant').val(),
-				'introduction': $('#introduction').val(),
-			};
-			// ajax 请求
-			$.ajax({
-                type: "POST",
-                url: "${api_chang_apply}",
-                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: data,
-                dataType: "text",
-                success: function(data){
-                    alert(data)
+			// let data = {
+			//     'application_key': $('#application_key').val(),
+			//     'applicant': $('#applicant').val(),
+			// 	'introduction': $('#introduction').val(),
+			// };
+			// // ajax 请求
+			// $.ajax({
+            //     type: "POST",
+            //     url: "${api_chang_apply}",
+            //     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+            //     data: data,
+            //     dataType: "text",
+            //     success: function(data){
+            //         alert(data)
+            //     },
+            //     error: function(e){
+			// 		alert(e.responseText);
+            //     }
+            // });
+			let formData = new FormData();
+
+			let application_key = $('#application_key').val();
+			let applicant = $('#applicant').val();
+			let introduction = $('#introduction').val();
+
+            formData.append("file",$("#upload_file")[0].files[0]);
+            formData.append("application_key",application_key);
+            formData.append("applicant",applicant);
+            formData.append("introduction",introduction);
+
+            $.ajax({
+                url : "${api_chang_apply}",
+                type : 'POST',
+                data : formData,
+				// 告诉jQuery不要去处理发送的数据，用于对data参数进行序列化处理 这里必须false
+                processData : false,
+				// 告诉jQuery不要去设置Content-Type请求头
+                contentType : false, //必须
+                success : function(data) {
+                    alert(data);
                 },
-                error: function(e){
-					alert(e.responseText);
+                error : function(e) {
+                    if(e.status===302){
+                        location.href = e.responseText
+                    } else {
+                        alert(e.responseText)
+                    }
                 }
             });
 

@@ -5,11 +5,11 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import  HttpResponse, JsonResponse
 
-from home_application.models import Award, Application, User, Level, Organization, Application
+from home_application.models import Award, Application, User, Level, Organization, Application, Accessory
 from home_application.decorators import require_datetime_GET, require_int_GET, require_superuser
 from home_application.utils import get_url_list
 
-from home_application.utils import DateJSONEncoder, generateUUID
+from home_application.utils import DateJSONEncoder, generateUUID, get_file
 
 
 # 开发框架中通过中间件默认是需要登录态的，如有不需要登录的，可添加装饰器login_exempt【装饰器引入from account.decorators import login_exempt】
@@ -550,20 +550,21 @@ def api_change_apply(request):
     application_key = request.POST.get('application_key')
     applicant = request.POST.get('applicant')
     introduction = request.POST.get('introduction')
+    file = request.FILES.get("file", None)
 
     if not application_key or not applicant or not introduction:
         # apply_key/award_key为空
         print u'参数为空'
-        return render_mako_context(request, '/404.html')
+        return HttpResponse('/404', status=302)
     if not Application.objects.is_exist(key=application_key):
         # 不存在该申请
         print u'不存在该申请'
-        return render_mako_context(request, '/404.html')
+        return HttpResponse('/404', status=302)
     if not Application.objects.can_edit(username=username, key=application_key):
         # 不能编辑该奖项
         return render_mako_context(request, '/403.html')
     try:
-        Application.change(key=application_key, introduction=introduction, applicant=applicant)
+        Application.change(key=application_key, introduction=introduction, applicant=applicant, file=file)
     except ObjectDoesNotExist, err:
         print err
         return HttpResponse('不存在该申请', status=400)
@@ -581,20 +582,21 @@ def api_reapply(request):
     application_key = request.POST.get('application_key')
     applicant = request.POST.get('applicant')
     introduction = request.POST.get('introduction')
+    file = request.FILES.get("file", None)
 
     if not application_key or not applicant or not introduction:
         # apply_key/award_key为空
         print u'参数为空'
-        return render_mako_context(request, '/404.html')
+        return HttpResponse('/404', status=302)
     if not Application.objects.is_exist(key=application_key):
         # 不存在该申请
         print u'不存在该申请'
-        return render_mako_context(request, '/404.html')
+        return HttpResponse('/404', status=302)
     if not Application.objects.can_edit(username=username, key=application_key):
         # 不能编辑该奖项
-        return render_mako_context(request, '/403.html')
+        return HttpResponse('/403', status=302)
     try:
-        Application.reapply(key=application_key, introduction=introduction, applicant=applicant)
+        Application.reapply(key=application_key, introduction=introduction, applicant=applicant, file=file)
     except ObjectDoesNotExist, err:
         print err
         return HttpResponse('不存在该申请', status=400)
@@ -611,14 +613,18 @@ def api_apply(request):
     award_key = request.POST.get('award_key')
     applicant = request.POST.get('applicant')
     introduction = request.POST.get('introduction')
-
+    file = request.FILES.get("file", None)
     username = request.user.username
+
+    print request.POST
+    print username
+    print award_key
     if not Award.objects.can_apply(username=username, award_key=award_key):
         # 不能申请该奖项
-        return render_mako_context(request, '/403.html')
+        return HttpResponse('/403', status=302)
 
     try:
-        Application.apply(username=username, award_key=award_key, applicant=applicant, introduction=introduction)
+        Application.apply(username=username, award_key=award_key, applicant=applicant, introduction=introduction, file=file)
     except ObjectDoesNotExist, err:
         print err
         return HttpResponse('申报失败，不存在该奖项', status=400)
@@ -630,3 +636,23 @@ def api_apply(request):
         return HttpResponse('申报失败，你已经申报了该奖项', status=400)
     else:
         return HttpResponse('申报成功')
+
+
+@require_http_methods('GET')
+def api_download_file(request):
+    key = request.GET.get('key')
+    try:
+        access = Accessory.objects.get(key=key)
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context('/404.html')
+    else:
+        res = get_file(access.key+'--'+access.name)
+        print res
+        file_ = res.get('Body')
+        # 设定文件头，这种设定可以让任意文件都能正确下载，而且已知文本文件不是本地打开
+        response = HttpResponse(file_, content_type='APPLICATION/OCTET-STREAM')
+        # 设定传输给客户端的文件名称
+        response['Content-Disposition'] = 'attachment; filename=%s' % access.name
+        return response
+

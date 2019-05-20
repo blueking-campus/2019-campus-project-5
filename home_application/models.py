@@ -12,7 +12,7 @@ from django.core.paginator import PageNotAnInteger
 
 from account.models import BkUser
 
-from home_application.utils import DateJSONEncoder, generateUUID
+from home_application.utils import DateJSONEncoder, generateUUID, put_file, delete_file
 
 
 class UserManager(models.Manager):
@@ -598,6 +598,11 @@ class ApplicationManager(models.Manager):
                 'introduction': application.introduction,
             }
             award = Award.objects.get_values(application.award.key)
+            access = application.accessory_set.all()
+            if application.award.is_attached and access.exists():
+                access = access[0]
+                apply['access_name'] = access.name
+                apply['access_key'] = access.key
         except ObjectDoesNotExist, err:
             print 'ApplicationManager:get_values award not exist', err
             info = 'ApplicationManager:get_values award not exist'
@@ -648,7 +653,7 @@ class Application(models.Model):
             return True
 
     @classmethod
-    def apply(cls, username, award_key, applicant, introduction):
+    def apply(cls, username, award_key, applicant, introduction, file):
         """申请奖项"""
         # 查用户
         try:
@@ -688,10 +693,17 @@ class Application(models.Model):
                 award.apply_number += 1
                 award.save()
                 new_apply.save()
+                if file:
+                    file_key = generateUUID()
+                    put_file(file_key+'--'+file.name, file)
+                    access = Accessory(name=file.name, key=file_key, path=award.name, application=new_apply)
+                    access.save()
         except ValueError, err:
             info = 'Application: apply: error when save new application'
             print info, err
             raise ValueError('%s %s' % (info, err))
+        except Exception, err:
+            print err
         else:
             return True
 
@@ -701,12 +713,27 @@ class Application(models.Model):
         key = kwargs.get('key')
         applicant = kwargs.get('applicant')
         introduction = kwargs.get('introduction')
+        file_ = kwargs.get('file')
         try:
             app = cls.objects.get(key=key)
             with transaction.atomic():
                 app.applicant = applicant
                 app.introduction = introduction
                 app.save()
+                if file_:
+                    access = app.accessory_set
+                    if access.exists():
+                        access = access[0]
+                        delete_file(access.key + '--' + access.name)
+                        access.name = file_.name
+                        put_file(access.key + '--' + file_.name, file_)
+                        access.save()
+                    else:
+                        file_key = generateUUID()
+                        put_file(file_key + '--' + file_.name, file)
+                        access = Accessory(name=file_.name, key=file_key, path=app.award.name, application=app)
+                        access.save()
+
         except ObjectDoesNotExist, err:
             info = 'Application:change application key not exist:'
             print info, err
@@ -724,6 +751,7 @@ class Application(models.Model):
         key = kwargs.get('key')
         applicant = kwargs.get('applicant')
         introduction = kwargs.get('introduction')
+        file_ = kwargs.get('file')
         try:
             app = cls.objects.get(key=key)
             with transaction.atomic():
@@ -731,6 +759,19 @@ class Application(models.Model):
                 app.introduction = introduction
                 app.status = 0
                 app.save()
+                if file_:
+                    access = app.accessory_set.all()
+                    if access.exists():
+                        access = access[0]
+                        delete_file(access.key + '--' + access.name)
+                        access.name = file_.name
+                        put_file(access.key + '--' + file_.name, file_)
+                        access.save()
+                    else:
+                        file_key = generateUUID()
+                        put_file(file_key + '--' + file_.name, file)
+                        access = Accessory(name=file_.name, key=file_key, path=app.award.name, application=app)
+                        access.save()
         except ObjectDoesNotExist, err:
             info = 'Application:reapply application key not exist:'
             print info, err

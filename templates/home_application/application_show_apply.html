@@ -110,6 +110,19 @@
 									<textarea class="form-control" id="introduction" name="introduction" placeholder="事迹介绍" style="height: 496px;"></textarea>
 								</div>
 							</div>
+							% if award['is_attached']:
+							<div class="form-group ">
+								<label class="col-sm-2 control-label bk-lh30 pt0" for="upload_file">附件</label>
+								<div class="col-sm-9">
+									<input type="file" id="upload_file" class="form-control">
+									% if application['access_key']:
+									<p class="help-block">已有附件：<a href="/api/download_file/?key=${application['access_key']}">${application['access_name']}</a></p>
+									% else:
+									<p class="help-block">添加附件</p>
+									% endif
+								</div>
+							</div>
+							% endif
 							<!--<div class="form-group clearfix">-->
 								<!--<div class="col-sm-4 col-sm-offset-8">-->
 									<!--<button type="button" class="btn btn-theme" id="submit">修改申报</button>-->

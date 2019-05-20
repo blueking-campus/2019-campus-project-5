@@ -32,22 +32,21 @@ urlpatterns = patterns(
     url(r'^login_qq/$', 'login_qq', name='login_qq'),                       # 手动登记QQ页面
 
     url(r'^api/all_awards/$', 'api_all_awards', name='api_awards'),                      # 查询所有awards
-    url(r'^api/all_organizations/$', 'api_all_organizations', name='api_organizations'), # 查询所有组织
     url(r'^api/add_award/$', 'api_add_award', name='api_add_award'),                     # 增加award
     url(r'^api/change_award/$', 'api_change_award', name='api_change_award'),            # 修改award
     url(r'^api/delete_award/$', 'api_delete_award', name='api_delete_award'),            # 删除award
-    url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),  # 删除organizations
 
-    url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),               # 查询所有我的申请
-    url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),               # 查询所有我的审核
-    url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),   # 查询所有我的申请
-    url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                  # 重新申请
-    url(r'^api/apply/$', 'api_apply', name='api_apply'),                        # 奖项申报
+    url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),                   # 查询所有我的申请
+    url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),                # 查询所有我的审核
+    url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),       # 查询所有我的申请
+    url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                      # 重新申请
+    url(r'^api/apply/$', 'api_apply', name='api_apply'),                            # 奖项申报
 
-
+    url(r'^api/download_file/$', 'api_download_file', name='api_download_file'),    # 下载文件
 
     url(r'^api/login_qq/$', 'api_login_qq', name='api_login_qq'),       # 登记qq
 
+    url(r'^api/all_organizations/$', 'api_all_organizations', name='api_organizations'),  # 查询所有组织
     url(r'^api/add_organizations/$', 'api_add_organizations', name='api_add_organizations'),  #增加组织
-    url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),
+    url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),  # 删除organizations
 )

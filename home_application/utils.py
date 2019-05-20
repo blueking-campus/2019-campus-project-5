@@ -5,7 +5,9 @@ import datetime
 import uuid
 
 from django.core.urlresolvers import reverse
-
+from qcloud_cos import CosConfig
+from qcloud_cos import CosS3Client
+from local_settings import secret_id, secret_key, region, scheme, token, Bucket
 # from home_application.urls_settings import urls
 
 
@@ -147,3 +149,43 @@ def get_url_list(name_lsit):
             url = urls.get(name)
         url_list.append(url)
     return url_list
+
+
+def get_file(key):
+    """上传文件到腾讯cos"""
+    config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key, Token=token, Scheme=scheme)
+    # 获取客户端对象
+    client = CosS3Client(config)
+    response = client.get_object(
+        Bucket=Bucket,
+        Key=key,
+        ResponseContentType='text/html; charset=utf-8'
+    )
+    return response
+
+
+def put_file(key, file):
+    """从腾讯cos下载文件"""
+    config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key, Token=token, Scheme=scheme)
+    # 获取客户端对象
+    client = CosS3Client(config)
+    body = file
+    response = client.put_object(
+        Bucket=Bucket,
+        Body=body,
+        Key=key,
+        EnableMD5=False
+    )
+    return response
+
+
+def delete_file(key):
+    """从腾讯cos删除文件"""
+    config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key, Token=token, Scheme=scheme)
+    # 获取客户端对象
+    client = CosS3Client(config)
+    client.delete_object(
+        Bucket=Bucket,
+        Key=key
+    )
+    return True
