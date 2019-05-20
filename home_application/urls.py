@@ -22,7 +22,10 @@ urlpatterns = patterns(
     url(r'^personal/show_apply/$', 'personal_show_apply', name='personal_show_apply'),          # 查看奖项申请页面
     url(r'^personal/reapply/$', 'personal_reapply', name='personal_reapply'),                   # 重新申请页面
     url(r'^personal/review/$', 'personal_review', name='personal_review'),                      # 我的审核页面
-    url(r'^personal/review/awards_review/$', 'personal_awards_review'),             # 奖项审批页面，通过按钮进入
+    url(r'^personal/give_award/$', 'give_award', name='give_award'),                   # 评奖页面
+    url(r'^personal/pass_award/$', 'pass_award', name='pass_award'),                   # 通过
+    url(r'^personal/reject_award/$', 'reject_award', name='reject_award'),                   # 驳回
+
 
     url(r'^application/apply/$', 'application_apply', name='application_apply'),    # 奖项申请页面
 
@@ -36,6 +39,7 @@ urlpatterns = patterns(
     url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),  # 删除organizations
 
     url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),               # 查询所有我的申请
+    url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),               # 查询所有我的审核
     url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),   # 查询所有我的申请
     url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                  # 重新申请
     url(r'^api/apply/$', 'api_apply', name='api_apply'),                        # 奖项申报
