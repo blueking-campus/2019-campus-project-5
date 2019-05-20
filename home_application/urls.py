@@ -43,6 +43,8 @@ urlpatterns = patterns(
     url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),   # 查询所有我的申请
     url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                  # 重新申请
     url(r'^api/apply/$', 'api_apply', name='api_apply'),                        # 奖项申报
+    url(r'^api/give_award/$', 'api_give_award', name='api_give_award'),                        # 奖项申报
+
 
 
 

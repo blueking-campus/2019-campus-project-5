@@ -192,7 +192,7 @@
                 }
             }],
         });
-        let api = $('#awards_table').DataTable();
+        let api = $('#organizations_table').DataTable();
         function delete_organizations(key) {
         let res = confirm("确认删除奖项？同时将删除该组织对应的奖项与申请");
         if (res){
@@ -214,7 +214,7 @@
                     }
                 }
             });
-            window.location.reload();
+           // window.location.reload();
         }
         console.log(key);
     }
