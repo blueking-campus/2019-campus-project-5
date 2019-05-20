@@ -254,7 +254,6 @@
         d.showModal();
     });
 
-    console.log()
     // 点击查询按钮
     $('#search').click({api: $('#awards_table').DataTable()},function (event){
 
@@ -264,7 +263,6 @@
         $('#status_value').val($('#status').val());
 
         let table = event.data.api;
-        console.log(table);
 
         table.ajax.reload();
     })
@@ -293,7 +291,6 @@
                 }
             });
         }
-        console.log(key);
     }
 
     // 克隆奖项
