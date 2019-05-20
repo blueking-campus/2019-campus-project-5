@@ -288,10 +288,10 @@
                     alert(data)
                 },
                 error: function(e){
-                    if(e.status==500){
-                        alert(e.responseText)
-                    }else if(e.status==302){
+                    if(e.status==302){
                         location.href = e.responseText
+                    } else {
+                        alert(e.responseText)
                     }
                 }
             });
