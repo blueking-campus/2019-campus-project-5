@@ -26,7 +26,6 @@ class UserManager(models.Manager):
             print err
             return False
 
-
     def qq_exist(self, qq):
         """qq是否存在"""
         try:
@@ -36,6 +35,7 @@ class UserManager(models.Manager):
             print err
             return False
 
+
 class User(models.Model):
     """用户关联表"""
     username = models.CharField(max_length=64, verbose_name=u'用户名', unique=True)
@@ -43,9 +43,12 @@ class User(models.Model):
 
     objects = UserManager()
 
-    class Mate:
+    class Meta:
         verbose_name = u'用户关联'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.qq
 
     def get_qq(self):
         """获取qq"""
@@ -70,12 +73,13 @@ class LevelManager(models.Manager):
     def all_list(self):
         return super(models.Manager, self).all().values_list('name', flat=True)
 
+
 class Level(models.Model):
     """奖项级别"""
     name = models.CharField(max_length=64, verbose_name=u'级别', unique=True)
     objects = LevelManager()
 
-    class Mate:
+    class Meta:
         verbose_name = u'级别'
         verbose_name_plural = verbose_name
 
@@ -149,8 +153,6 @@ class OrganizationManager(models.Manager):
         return data
 
 
-
-
 class Organization(models.Model):
     """组织"""
     name = models.CharField(max_length=64, verbose_name=u'组织名称')
@@ -165,7 +167,7 @@ class Organization(models.Model):
 
     objects = OrganizationManager()
 
-    class Mate:
+    class Meta:
         verbose_name = u'组织'
         verbose_name_plural = verbose_name
 
@@ -366,9 +368,12 @@ class Award(models.Model):
 
     objects = AwardManager()
 
-    class Mate:
+    class Meta:
         verbose_name = u'奖项'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        self.name
 
     def logical_delete(self):
         """逻辑删除奖项"""
@@ -623,9 +628,12 @@ class Application(models.Model):
 
     objects = ApplicationManager()
 
-    class Mate:
+    class Meta:
         verbose_name = u'奖项申请'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.applicant
 
     def logical_delete(self):
         """逻辑删除申请"""
@@ -745,7 +753,7 @@ class Accessory(models.Model):
     path = models.CharField(max_length=128, verbose_name=u'附件路径')
     application = models.ForeignKey(to=Application, verbose_name=u'奖项申报', on_delete=models.CASCADE)
 
-    class Mate:
+    class Meta:
         verbose_name = u'附件'
         verbose_name_plural = verbose_name
 
@@ -757,6 +765,6 @@ class Review(models.Model):
     is_pass = models.BooleanField(verbose_name=u'是否通过', default=False)
     is_awarded = models.BooleanField(verbose_name=u'是否获奖', default=False)
 
-    class Mate:
+    class Meta:
         verbose_name = u'申请评价'
         verbose_name_plural = verbose_name
