@@ -12,9 +12,18 @@
 	<!-- 可申请奖项面板 -->
 	<div class="panel panel-default">
 		<!-- Default panel contents -->
-		<div class="panel-heading">申请奖项</div>
+		<div class="panel-heading">可申请奖项</div>
 		<div class="panel-body">
 			<!--面板主体 开始-->
+
+
+			% if not viewable_awards:
+			<div class="text-center">
+				<h1>kōng kōng rú yě</h1>
+				<h1>空&nbsp;空&nbsp;如&nbsp;也</h1>
+			</div>
+			% endif
+
 			% for viewable_award in viewable_awards:
 			<a href="/application/apply?award_key=${viewable_award['key']}">
 				<div class="col-md-4 col-sm-4 mb">
@@ -42,7 +51,7 @@
 
 	<div class="panel panel-default">
 		<!-- Default panel contents -->
-		<div class="panel-heading">申请奖项</div>
+		<div class="panel-heading">已过期奖项</div>
 		<div class="panel-body">
 			<!--面板主体 开始-->
 
@@ -51,6 +60,12 @@
 		<div style="height:310px; overflow: auto;" id="list_1556686530691" class="king-list3 m0">
 			<table class="king-list3-table ranger-box">
 				<tbody>
+					% if not outdated_awards:
+					<div class="text-center">
+						<h1>NO ONE</h1>
+					</div>
+					% endif
+					% if outdated_awards:
 					<tr>
 						<td style="width:20%;">所属单位</td>
 						<td style="width:20%;">申请奖项</td>
@@ -58,13 +73,14 @@
 						<td style="width:20%;">申请人/团队</td>
 						<td style="width:30px;">申请详情</td>
 					</tr>
+					% endif
 					% for outdated_award in outdated_awards:
 					<tr>
 						<td style="width:20%;">${outdated_award['organization__name']}</td>
 						<td style="width:20%;">${outdated_award['organization__name']}</td>
 						<td style="width:20%;">${outdated_award['created_time']}</td>
 						<td style="width:20%;">${outdated_award['applicant']}</td>
-						<td style="width:30px;"><a href="application/${outdated_award['key']}/">详情</a></td>
+						<td style="width:30px;"><a href="/personal/show_apply/?application__key=${outdated_award['key']}/">详情</a></td>
 					</tr>
 					% endfor
 				</tbody>
