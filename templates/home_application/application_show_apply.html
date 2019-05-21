@@ -107,7 +107,7 @@
 							<div class="form-group ">
 								<label class="col-sm-2 control-label bk-lh30 pt0" for="introduction">事迹介绍：</label>
 								<div class="col-sm-9">
-									<textarea class="form-control" id="introduction" name="introduction" placeholder="事迹介绍" style="height: 496px;"></textarea>
+									<textarea class="form-control" id="introduction" name="introduction" placeholder="事迹介绍" style="height: 433px;"></textarea>
 								</div>
 							</div>
 							% if award['is_attached']:
@@ -123,6 +123,26 @@
 								</div>
 							</div>
 							% endif
+							<div class="form-group clearfix ">
+								<label class="control-label col-sm-3 bk-lh30 pt0">是否获奖：</label>
+								<div class="col-sm-9">
+									<div class="radio pt0">
+										<label class="mr10">
+											<input type="radio" name="is_give" id="yes_give" class="bk-top5" value="1">
+											<span class="bk-lh30">是</span>
+										</label>
+										<label class="mr10">
+											<input type="radio" name="is_give" id="no_give" class="bk-top5" value="0">
+											<span class="bk-lh30">否</span>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group clearfix ">
+								<label class="col-sm-3 control-label bk-lh30 pt0">评语：</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control bk-valign-top" id="pingyu" name="pingyu" placeholder="请输入评语"> </div>
+							</div>
 							<!--<div class="form-group clearfix">-->
 								<!--<div class="col-sm-4 col-sm-offset-8">-->
 									<!--<button type="button" class="btn btn-theme" id="submit">修改申报</button>-->
@@ -131,6 +151,7 @@
 							<!--</div>-->
 						</form>
 						<!-- 右边 结束 -->
+
 					</div>
 				</div>
 			<!--面板主体 结束-->
@@ -168,17 +189,25 @@
 		$('#award_key').val("${award['key']}");
 		$('#name').val("${award['name']}");
 		$('#level__name').val("${award['level__name']}");
-		$('#organization__name').val("${award['organization__name']}")
+		$('#organization__name').val("${award['organization__name']}");
 		$('#begin_time').val("${award['begin_time']}");
 		$('#end_time').val("${award['end_time']}");
 
 		// apply 表单赋值
 		$('#applicant').val("${application['applicant']}");
 		$('#introduction').val("${application['introduction']}");
-		$('#application_key').val("${application['key']}")
+		$('#application_key').val("${application['key']}");
+		$('#pingyu').val("${application['pingyu']}");
+
 
 		let is_active = "${award['is_active']}";
         let is_attached = "${award['is_attached']}";
+        let status = "${application['status']}";
+        if (status=='4') {
+            $('input:radio[name="is_give"]:first').attr('checked', 'true');
+        }else if (status=='3') {
+            $('input:radio[name="is_give"]:last').attr('checked', 'true');
+        }
         if (is_active == "True") {
             $('input:radio[name="is_active"]:first').attr('checked', 'true');
         }else if (is_active == "False") {

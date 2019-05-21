@@ -658,6 +658,8 @@ class ApplicationManager(models.Manager):
                 'key': application.key,
                 'applicant': application.applicant,
                 'introduction': application.introduction,
+                'pingyu': application.pingyu,
+                'status': application.status,
             }
             award = Award.objects.get_values(application.award.key)
             access = application.accessory_set.all()
@@ -692,6 +694,7 @@ class Application(models.Model):
     created_time = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
     is_deleted = models.BooleanField(verbose_name=u'逻辑删除', default=False)
     key = models.CharField(max_length=64, verbose_name=u'申报标识', unique=True)
+    pingyu = models.TextField(verbose_name=u'负责人员', blank=True)
 
     objects = ApplicationManager()
 

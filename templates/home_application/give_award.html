@@ -140,6 +140,11 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group clearfix ">
+                    <label class="col-sm-3 control-label bk-lh30 pt0">评语：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control bk-valign-top" id="pingyu" placeholder="请输入评语"> </div>
+                </div>
 
                 <div class="form-group clearfix">
                     <div class="col-sm-9 col-sm-offset-3">
@@ -224,14 +229,15 @@
     $('#submit').click(function () {
         var url = '${SITE_URL}api/give_award/';
         var is_give = $('#yes_give').val();
+        var pingyu = $('#pingyu').val();
         var application_key = $('#application_key').val();
-        var param = {is_give:is_give, application_key:application_key};
-        if(1){
+        var param = {is_give:is_give, application_key:application_key, pingyu:pingyu};
+        if(pingyu && is_give){
             $.get(url,param,function (res) {
 
             },'json');
         }
-        else{alert("请选择");}
+        else{alert("请评奖，不能为空");}
         alert('操作成功');
     })
 </script>
