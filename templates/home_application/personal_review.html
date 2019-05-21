@@ -146,14 +146,14 @@
                 // 已获奖/未获奖： 无
                 let content = `操作`;
                 let pass_award = `<a class="btn btn-info btn-xs mr5"
-                                title="评奖"
+                                title="通过"
                                 href="${pass_award}?application__key=` +data.key+`">
-                                <i class="fa fa-refresh "></i>
+                                <i class="fa fa-cog "></i>
                               </a>`;
                 let reject_award = `<a class="btn btn-info btn-xs mr5"
-                                title="评奖"
+                                title="驳回"
                                 href="${reject_award}?application__key=` +data.key+`">
-                                <i class="fa fa-refresh "></i>
+                                <i class="fa-search "></i>
                               </a>`;
                 let give_award = `<a class="btn btn-info btn-xs mr5"
                                 title="评奖"
@@ -165,16 +165,16 @@
                     content = '<div class="">'+ pass_award + reject_award + '</div>';
                 } else if (row.status===1) {
                     // content = '未通过';
-                    content = '<div class="">'+ + '</div>';
+                    content = '<div class=""></div>';
                 } else if (row.status===2) {
                     // content = '已通过';
                     content = '<div class="">'+ give_award + '</div>';
                 } else if (row.status===3) {
                     // content = '未获奖';
-                    content = '<div class="">'+ + '</div>';
+                    content = '<div class=""></div>';
                 } else if (row.status===4) {
                     // content = '已获奖';
-                    content = '<div class="">'+  + '</div>';
+                    content = '<div class=""></div>';
                 }
                 return content;
             }

@@ -191,16 +191,56 @@ def personal_review(request):
 
 @require_http_methods('GET')
 def pass_award(request):
-    pass
+    application__key = request.GET.get('application__key')
+    if not application__key:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application__key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+    try:
+        application_ = Application.objects.get_values(application__key)
+        print application_
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context(request, '/404.html')
+    Application.objects.filter(key=application__key).update(status=2)
+    return HttpResponse('已经通过')
 
 @require_http_methods('GET')
 def reject_award(request):
-    pass
+    application__key = request.GET.get('application__key')
+    if not application__key:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application__key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
+    try:
+        application_ = Application.objects.get_values(application__key)
+        print application_
+    except ObjectDoesNotExist, err:
+        print err
+        return render_mako_context(request, '/404.html')
+    Application.objects.filter(key=application__key).update(status=1)
+    return HttpResponse('已经驳回')
 
 @require_http_methods('GET')
 def give_award(request):
     application__key = request.GET.get('application__key')
-    #username = request.user.username
+
+    if not application__key:
+        # apply_key/award_key为空
+        print u'参数为空'
+        return render_mako_context(request, '/404.html')
+    if not Application.objects.is_exist(key=application__key):
+        # 不存在该申请
+        print u'不存在该申请'
+        return render_mako_context(request, '/404.html')
 
     try:
         application_ = Application.objects.get_values(application__key)
@@ -208,15 +248,28 @@ def give_award(request):
         print err
         return render_mako_context(request, '/404.html')
 
-    router = get_url_list(['personal', 'personal_review', 'give_award'])
-    give_award_ = reverse('give_award')
+    router = get_url_list(['personal', 'personal_review'])
+    api_give_award_ = reverse('api_give_award')
     data = {
         'application': application_['application'],
         'award': application_['award'],
         'router': router,
-        'give_award': give_award_,
+        'api_give_award': api_give_award_,
     }
     return render_mako_context(request, '/home_application/give_award.html', data)
+
+@require_http_methods('GET')
+def api_give_award(request):
+    application__key = request.GET.get('application_key')
+    print 'key=',application__key
+    is_give = request.GET.get('is_give')
+    if is_give == '1':
+        Application.objects.filter(key=application__key).update(status=4)
+    else:
+        Application.objects.filter(key=application__key).update(status=3)
+
+    print is_give,type(is_give), is_give == '1'
+    return HttpResponse('提交成功')
 
 @require_http_methods('GET')
 def personal_apply(request):
@@ -405,7 +458,6 @@ def api_add_organizations(request):
     zu_zhi = request.GET.get('zu_zhi')
     zu_zhang = request.GET.get('zu_zhang')
     zu_yuan = request.GET.get('zu_yuan')
-
     print zu_zhi,zu_zhang,zu_yuan,request.GET
 
     Organization.objects.create(name=zu_zhi, reviewer=zu_zhang, applicant=zu_yuan, manager=zu_zhang, is_deleted=False, key=generateUUID())
@@ -516,7 +568,7 @@ def api_my_review(request):
     page = int(request.GET.get('start', 1))+1
     page_size = int(request.GET.get('length', 10))
 
-    my_review = Application.objects.my_apply(username=username, page=page, page_size=page_size)
+    my_review = Application.objects.my_review(username=username, page=page, page_size=page_size)
     my_review['draw'] = draw
     print '###view: my_apply:', my_review
     return JsonResponse(my_review)

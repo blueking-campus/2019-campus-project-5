@@ -496,6 +496,68 @@ class ApplicationManager(models.Manager):
         data = json.loads(data)
         return data
 
+    def my_review(self, *args, **kwargs):
+        """根据username得到未删除的我的审核"""
+        username = kwargs.get('username')
+        name = kwargs.get('name')
+        status = kwargs.get('status')
+        date_time = kwargs.get('date_time')
+        page = kwargs.get('page', 1)
+        page_size = kwargs.get('page_size', 10)
+
+        print '###apply: kwargs: ', kwargs
+        # 所有未逻辑删除的我的申请
+        applications = self.all().filter(user__username=username, is_deleted=False)
+        print '###my_apply applications:', applications
+        if name:
+            # 模糊查询奖项名
+            applications = applications.filter(award__name__icontains=name)
+        if status != -1 and status:
+            # 查询申请状态
+            # (0, u'未审核'), (1, u'未通过'), (2, u'已通过'), (3, u'未获奖'), (4, u'已获奖')
+            applications = applications.filter(status=status)
+        if date_time:
+            # 查询时间
+            date_time = datetime.datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+            delta = datetime.timedelta(hours=12)
+            later = date_time+delta
+            early = date_time-delta
+            applications = applications.filter(created_time__lte=later, created_time__gte=early)
+
+        # 分页
+        response = {}
+        paginator = Paginator(applications, page_size)
+        response['recordsTotal'] = paginator.count
+        response['recordsFiltered'] = paginator.count
+
+        print '###my_apply:', response
+        print '###my_apply applications:', applications
+        try:
+            applications = paginator.page(page).object_list
+        except PageNotAnInteger, err:
+            print err
+            applications = paginator.page(1).object_list
+        except EmptyPage, err:
+            print err
+            applications = paginator.page(paginator.num_pages).object_list
+        except ZeroDivisionError, err:
+            print err
+            response['awards'] = []
+            return response
+
+        # 格式化数据
+        data = applications.values('key',
+                                   'award__organization__name',
+                                   'award__name',
+                                   'created_time',
+                                   'applicant',
+                                   'status',
+                                   'award__is_active')
+        data = json.dumps(list(data), cls=DateJSONEncoder)
+        data = json.loads(data)
+        response['data'] = data
+        return response
+
     def my_apply(self, *args, **kwargs):
         """根据username得到未删除的我的申请"""
         username = kwargs.get('username')
