@@ -206,7 +206,7 @@
                 dataType: "text",
                 success: function(data){
                     alert(data);
-                    $.api.ajax.reload();
+                    api.ajax.reload();
                 },
                 error: function(e){
                     if(e.status==302){

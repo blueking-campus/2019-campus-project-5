@@ -36,10 +36,12 @@ urlpatterns = patterns(
     url(r'^api/delete_award/$', 'api_delete_award', name='api_delete_award'),            # 删除award
 
     url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),                   # 查询所有我的申请
-    url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),                # 查询所有我的审核
     url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),       # 查询所有我的申请
     url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                      # 重新申请
     url(r'^api/apply/$', 'api_apply', name='api_apply'),                            # 奖项申报
+
+    url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),  # 查询所有我的审核
+    url(r'^api/give_award/$', 'api_give_award', name='api_give_award'),
 
     url(r'^api/download_file/$', 'api_download_file', name='api_download_file'),    # 下载文件
 

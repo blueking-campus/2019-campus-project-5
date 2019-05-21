@@ -656,7 +656,8 @@ def api_reapply(request):
         print err
         return HttpResponse('保存修改失败', status=500)
     else:
-        return HttpResponse('重新申请成功')
+        res = reverse('personal_apply')
+        return HttpResponse(res, status=302)
 
 
 @require_http_methods('POST')
