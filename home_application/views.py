@@ -629,7 +629,8 @@ def api_change_apply(request):
         print err
         return HttpResponse('保存修改失败', status=500)
     else:
-        return HttpResponse('保存成功')
+        res = reverse('personal_apply')
+        return HttpResponse(res, status=302)
 
 
 @require_http_methods('POST')
@@ -693,7 +694,8 @@ def api_apply(request):
         print err
         return HttpResponse('申报失败，你已经申报了该奖项', status=400)
     else:
-        return HttpResponse('申报成功')
+        res = reverse('personal_apply')
+        return HttpResponse(res, status=302)
 
 
 @require_http_methods('GET')
@@ -707,7 +709,7 @@ def api_download_file(request):
     else:
         res = get_file(access.key+'--'+access.name)
         print res
-        file_ = res.get('Body')
+        file_ = res.get('Body').get_raw_stream()
         # 设定文件头，这种设定可以让任意文件都能正确下载，而且已知文本文件不是本地打开
         response = HttpResponse(file_, content_type='APPLICATION/OCTET-STREAM')
         # 设定传输给客户端的文件名称

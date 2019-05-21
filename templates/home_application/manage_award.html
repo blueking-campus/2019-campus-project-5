@@ -52,7 +52,7 @@
                         <br>
                     </div>
                     <button type="button" class="btn btn-theme btn-sm" id="search">&nbsp;&nbsp;查询&nbsp;&nbsp;</button>
-                    <button type="button" class="btn btn-theme btn-sm" id="clones">批量克隆</button>
+                    <!--<button type="button" class="btn btn-theme btn-sm" id="clones">批量克隆</button>-->
                     <a class="btn btn-theme btn-sm" href="/manage/awards/add/">&nbsp;&nbsp;新增&nbsp;&nbsp;</a>
                 </form>
             </div>
@@ -186,7 +186,7 @@
                 //             </div>`
                 var content = `<div class="">
                                 <a class="btn btn-success btn-xs" title="查看" href="${manage_show_award}?award__key=`+data.key+`"><i class=" fa fa-search"></i></a>
-                                <button class="btn btn-primary btn-xs" title="克隆" onclick='clone_award("`+data.key+`","`+data.name+`")'><i class="fa fa-mail-reply-all" ></i></button>
+                                <!--<button class="btn btn-primary btn-xs" title="克隆" onclick='clone_award("`+data.key+`","`+data.name+`")'><i class="fa fa-mail-reply-all" ></i></button>-->
                                 <a class="btn btn-warning btn-xs" title="编辑" href="${manage_change_award}?award__key=` +data.key+`"><i class="fa fa-cog "></i></a>
                                 <button class="btn btn-danger btn-xs" title="删除" onclick='delete_award("`+data.key+`")' name="delete_btn"><i class="fa fa-trash-o "></i></button>
                             </div>`;

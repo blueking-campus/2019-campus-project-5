@@ -667,6 +667,9 @@ class ApplicationManager(models.Manager):
                 access = access[0]
                 apply['access_name'] = access.name
                 apply['access_key'] = access.key
+            else:
+                apply['access_name'] = None
+                apply['access_key'] = None
         except ObjectDoesNotExist, err:
             print 'ApplicationManager:get_values award not exist', err
             info = 'ApplicationManager:get_values award not exist'
