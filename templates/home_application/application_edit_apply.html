@@ -224,7 +224,11 @@
 			let applicant = $('#applicant').val();
 			let introduction = $('#introduction').val();
 
-            formData.append("file",$("#upload_file")[0].files[0]);
+            try {
+                formData.append("file",$("#upload_file")[0].files[0]);
+			} catch (e) {
+				console.log(e);
+            }
             formData.append("application_key",application_key);
             formData.append("applicant",applicant);
             formData.append("introduction",introduction);

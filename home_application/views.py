@@ -607,14 +607,14 @@ def api_change_apply(request):
     if not application_key or not applicant or not introduction:
         # apply_key/award_key为空
         print u'参数为空'
-        return HttpResponse('/404', status=302)
+        return HttpResponse('参数错误', status=404)
     if not Application.objects.is_exist(key=application_key):
         # 不存在该申请
         print u'不存在该申请'
-        return HttpResponse('/404', status=302)
+        return HttpResponse('不存在该申请', status=404)
     if not Application.objects.can_edit(username=username, key=application_key):
         # 不能编辑该奖项
-        return render_mako_context(request, '/403.html')
+        return HttpResponse('无法编辑该奖项', status=403)
     try:
         Application.change(key=application_key, introduction=introduction, applicant=applicant, file=file)
     except ObjectDoesNotExist, err:
@@ -639,14 +639,14 @@ def api_reapply(request):
     if not application_key or not applicant or not introduction:
         # apply_key/award_key为空
         print u'参数为空'
-        return HttpResponse('/404', status=302)
+        return HttpResponse('参数错误', status=404)
     if not Application.objects.is_exist(key=application_key):
         # 不存在该申请
         print u'不存在该申请'
-        return HttpResponse('/404', status=302)
+        return HttpResponse('不存在该申请', status=404)
     if not Application.objects.can_edit(username=username, key=application_key):
         # 不能编辑该奖项
-        return HttpResponse('/403', status=302)
+        return HttpResponse('无法编辑该奖项', status=403)
     try:
         Application.reapply(key=application_key, introduction=introduction, applicant=applicant, file=file)
     except ObjectDoesNotExist, err:
@@ -673,7 +673,7 @@ def api_apply(request):
     print award_key
     if not Award.objects.can_apply(username=username, award_key=award_key):
         # 不能申请该奖项
-        return HttpResponse('/403', status=302)
+        return HttpResponse('无法申请该奖项', status=403)
 
     try:
         Application.apply(username=username, award_key=award_key, applicant=applicant, introduction=introduction, file=file)

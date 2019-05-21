@@ -26,7 +26,6 @@ urlpatterns = patterns(
     url(r'^personal/pass_award/$', 'pass_award', name='pass_award'),                   # 通过
     url(r'^personal/reject_award/$', 'reject_award', name='reject_award'),                   # 驳回
 
-
     url(r'^application/apply/$', 'application_apply', name='application_apply'),    # 奖项申请页面
 
     url(r'^login_qq/$', 'login_qq', name='login_qq'),                       # 手动登记QQ页面
@@ -35,18 +34,6 @@ urlpatterns = patterns(
     url(r'^api/add_award/$', 'api_add_award', name='api_add_award'),                     # 增加award
     url(r'^api/change_award/$', 'api_change_award', name='api_change_award'),            # 修改award
     url(r'^api/delete_award/$', 'api_delete_award', name='api_delete_award'),            # 删除award
-<<<<<<< HEAD
-=======
-    url(r'^api/delete_organizations/$', 'api_delete_organizations', name='api_delete_organizations'),  # 删除organizations
-
-    url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),               # 查询所有我的申请
-    url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),               # 查询所有我的审核
-    url(r'^api/change_apply/$', 'api_change_apply', name='api_change_apply'),   # 查询所有我的申请
-    url(r'^api/reapply/$', 'api_reapply', name='api_reapply'),                  # 重新申请
-    url(r'^api/apply/$', 'api_apply', name='api_apply'),                        # 奖项申报
-    url(r'^api/give_award/$', 'api_give_award', name='api_give_award'),                        # 奖项申报
-
->>>>>>> 5cbe4949e7a40fc3162988a734e5b9ab01651ad6
 
     url(r'^api/my_apply/$', 'api_my_apply', name='api_my_apply'),                   # 查询所有我的申请
     url(r'^api/my_review/$', 'api_my_review', name='api_my_review'),                # 查询所有我的审核
