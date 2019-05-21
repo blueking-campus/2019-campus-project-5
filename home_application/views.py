@@ -263,10 +263,13 @@ def api_give_award(request):
     application__key = request.GET.get('application_key')
     print 'key=',application__key
     is_give = request.GET.get('is_give')
+    pingyu = request.GET.get('pingyu')
     if is_give == '1':
         Application.objects.filter(key=application__key).update(status=4)
+        Application.objects.filter(key=application__key).update(pingyu=pingyu)
     else:
         Application.objects.filter(key=application__key).update(status=3)
+        Application.objects.filter(key=application__key).update(pingyu=pingyu)
 
     print is_give,type(is_give), is_give == '1'
     return HttpResponse('提交成功')
@@ -381,8 +384,10 @@ def personal_show_apply(request):
 
     router = get_url_list(['personal_show_apply'])
     api_change_apply_ = reverse('api_change_apply')
+    print application_
     data = {
         'application': application_['application'],
+
         'award': application_['award'],
         'router': router,
         'api_chang_apply': api_change_apply_,
