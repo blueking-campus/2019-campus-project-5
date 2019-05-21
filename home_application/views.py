@@ -700,6 +700,7 @@ def api_apply(request):
 
 @require_http_methods('GET')
 def api_download_file(request):
+    """api 下载文件"""
     key = request.GET.get('key')
     try:
         access = Accessory.objects.get(key=key)

@@ -232,6 +232,8 @@ class AwardManager(models.Manager):
             date_time = datetime.datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
             awards = awards.filter(begin_time__lte=date_time, end_time__gte=date_time)
 
+        # 按增加先后倒序
+        awards = awards.order_by('-id')
         # 分页
         response = {}
         paginator = Paginator(awards, page_size)
@@ -490,6 +492,8 @@ class ApplicationManager(models.Manager):
         now = datetime.datetime.now()
         apps = self.all().filter(award__organization__applicant__contains=qq, status=4)
         apps = apps.filter(Q(award__begin_time__gte=now) | Q(award__end_time__lte=now) | Q(award__is_active=False))
+        # 按增加先后倒序
+        apps = apps.order_by('-id')
 
         data = apps.values('key', 'award__organization__name', 'award__name', 'created_time', 'applicant')
         data = json.dumps(list(data), cls=DateJSONEncoder)
@@ -586,6 +590,9 @@ class ApplicationManager(models.Manager):
             early = date_time-delta
             applications = applications.filter(created_time__lte=later, created_time__gte=early)
 
+        # 按增加先后倒序
+        applications = applications.order_by('-id')
+        
         # 分页
         response = {}
         paginator = Paginator(applications, page_size)

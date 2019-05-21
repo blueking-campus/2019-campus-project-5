@@ -51,7 +51,7 @@
 
 	<div class="panel panel-default">
 		<!-- Default panel contents -->
-		<div class="panel-heading">已过期奖项</div>
+		<div class="panel-heading">已获奖奖项</div>
 		<div class="panel-body">
 			<!--面板主体 开始-->
 
@@ -76,11 +76,11 @@
 					% endif
 					% for outdated_award in outdated_awards:
 					<tr>
-						<td style="width:20%;">${outdated_award['organization__name']}</td>
-						<td style="width:20%;">${outdated_award['organization__name']}</td>
+						<td style="width:20%;">${outdated_award['award__organization__name']}</td>
+						<td style="width:20%;">${outdated_award['award__name']}</td>
 						<td style="width:20%;">${outdated_award['created_time']}</td>
 						<td style="width:20%;">${outdated_award['applicant']}</td>
-						<td style="width:30px;"><a href="/personal/show_apply/?application__key=${outdated_award['key']}/">详情</a></td>
+						<td style="width:30px;"><a href="/personal/show_apply/?application__key=${outdated_award['key']}">详情</a></td>
 					</tr>
 					% endfor
 				</tbody>
